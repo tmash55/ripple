@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ripple — a little kindness, every state, all connected</title>
+<!--
+  Design language: extracted from mobbin.com (2026-07-08) by the design-language skill.
+  Motion language: GSAP ScrollTrigger + Lenis smooth scroll, with film grain / vignette /
+  glass cards / color tint / scroll pacing layers.
+  Type note: the source uses "M Saans" (commercial) at variable weights 300/456/652.
+  This scaffold uses Inter Variable — the source's own declared fallback — at the same
+  non-standard weights via the variable wght axis.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+<style>
+/* ============ tokens — verbatim from mobbin.com ============ */
+:root{
+  --ink:#141414;
+  --ink-hover:#262626;
+  --text-secondary:#717171;
+  --text-tertiary:#adadad;
+  --surface:#ffffff;
+  --surface-dark:#262626;
+  --accent:#0065ff;
+  --accent-bright:#0079ff;
+  --success:#217f08;
+  --warning:#8b4e00;
+  --danger:#ce2b04;
+  --hairline-6:#4040400f;
+  --hairline-8:#40404014;
+  --hairline-10:#4040401a;
+  --hairline-12:#4040401f;
+  --outline-16:#41414129;
+  --on-dark-8:#ededed14;
+  --on-dark-16:#ededed29;
+  --border-btn:#e1e1e1;
+
+  --font-sans:"Inter",sans-serif;
+  --w-display:652;
+  --w-ui:456;
+  --w-body:300;
+
+  --fs-hero:80px;   --lh-hero:80px;   --ls-hero:-0.6px;
+  --fs-h2:56px;     --lh-h2:56px;     --ls-h2:-0.6px;
+  --fs-h3:32px;     --lh-h3:36px;
+  --fs-h4:24px;     --lh-h4:30px;
+  --fs-lede:20px;   --lh-lede:26px;
+  --fs-body:16px;   --lh-body:22px;   --ls-body:0.2px;
+  --fs-small:14px;  --lh-small:20px;
+
+  --gap-s:12px; --gap-m:16px; --gap-l:24px; --gap-xl:32px; --gap-2xl:40px; --gap-3xl:64px; --gap-4xl:80px;
+  --section-pad:120px;
+  --page-margin:32px;
+  --container:960px;
+  --container-wide:1280px;
+  --nav-h:60px;
+
+  --r-control:10px; --r-card-s:16px; --r-card-m:20px; --r-card-l:24px; --r-pill:999px;
+
+  --nav-blur:blur(40px);
+  --shadow-whisper:0 8px 40px #0000000a;
+  --transition-ui:color .2s ease, background .2s ease;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+
+body{
+  font-family:var(--font-sans);
+  font-weight:var(--w-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  letter-spacing:var(--ls-body);
+  color:var(--ink);
+  background:var(--surface);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-optical-sizing:auto}
+
+/* ============ cinematic layers (per motion reference) ============ */
+.grain{
+  position:fixed;inset:-50%;width:200%;height:200%;pointer-events:none;z-index:9998;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 8s steps(10) infinite;
+}
+@keyframes grain{
+  0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-10%)}20%{transform:translate(-15%,5%)}
+  30%{transform:translate(7%,-25%)}40%{transform:translate(-5%,25%)}50%{transform:translate(-15%,10%)}
+  60%{transform:translate(15%,0)}70%{transform:translate(0,15%)}80%{transform:translate(3%,35%)}90%{transform:translate(-10%,10%)}
+}
+.vignette{
+  position:fixed;inset:0;pointer-events:none;z-index:9997;
+  background:radial-gradient(ellipse at center,transparent 60%,rgba(20,20,20,.06) 100%);
+}
+
+/* ============ type roles ============ */
+.hero-headline{font-weight:var(--w-display);font-size:var(--fs-hero);line-height:var(--lh-hero);letter-spacing:var(--ls-hero)}
+.heading-2{font-weight:var(--w-display);font-size:var(--fs-h2);line-height:var(--lh-h2);letter-spacing:var(--ls-h2)}
+.heading-3{font-weight:var(--w-display);font-size:var(--fs-h3);line-height:var(--lh-h3);letter-spacing:0}
+.heading-4{font-weight:var(--w-display);font-size:var(--fs-h4);line-height:var(--lh-h4);letter-spacing:0}
+.lede{font-weight:var(--w-body);font-size:var(--fs-lede);line-height:var(--lh-lede);letter-spacing:0;color:var(--text-secondary)}
+.small{font-size:var(--fs-small);line-height:var(--lh-small)}
+.eyebrow{font-weight:var(--w-ui);font-size:var(--fs-small);line-height:var(--lh-small);letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
+
+/* ============ layout ============ */
+.container{max-width:var(--container);margin:0 auto;padding:0 var(--page-margin)}
+.container-wide{max-width:var(--container-wide);margin:0 auto;padding:0 var(--page-margin)}
+section,header.hero,.dark-band{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--section-pad) 0;
+}
+
+/* ============ nav ============ */
+.nav-wrap{position:fixed;top:16px;left:0;right:0;z-index:1000;display:flex;justify-content:center;padding:0 var(--page-margin)}
+nav.pill{
+  display:flex;align-items:center;gap:var(--gap-l);
+  height:var(--nav-h);padding:0 12px 0 20px;
+  border-radius:var(--r-pill);
+  background:rgba(255,255,255,.7);
+  -webkit-backdrop-filter:var(--nav-blur);backdrop-filter:var(--nav-blur);
+  border:1px solid var(--hairline-8);
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:var(--w-display);font-size:18px;color:var(--ink);text-decoration:none}
+.brand-mark{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center}
+.brand-mark svg{width:100%;height:100%;display:block}
+.nav-links{display:flex;gap:4px;list-style:none}
+.nav-links a{
+  display:block;padding:8px 14px;border-radius:var(--r-pill);
+  color:var(--ink);text-decoration:none;font-weight:var(--w-ui);font-size:var(--fs-small);
+  transition:var(--transition-ui);
+}
+.nav-links a:hover{background:var(--hairline-6)}
+
+/* ============ buttons ============ */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:16px 20px;border-radius:var(--r-pill);
+  font-family:var(--font-sans);font-weight:var(--w-ui);font-size:var(--fs-body);letter-spacing:-.01em;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:var(--transition-ui);
+}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:var(--ink-hover)}
+.btn-secondary{background:transparent;color:var(--ink);border:1px solid var(--border-btn)}
+.btn-secondary:hover{background:var(--hairline-6)}
+.btn-sm{padding:10px 16px;font-size:var(--fs-small)}
+.btn-light{background:#fff;color:var(--ink)}
+.btn-light:hover{background:#ededed}
+
+/* ============ hero ============ */
+header.hero{align-items:center;text-align:center;position:relative;overflow:hidden}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:url('assets/hero-bg-valley.jpg') center bottom / cover no-repeat;
+  transform:scale(1.06);will-change:transform;
+}
+.hero-video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 65%;
+}
+.hero-seam{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 65%;
+  opacity:0;pointer-events:none;
+}
+/* tall/narrow viewports: show the full composition, bottom-anchored,
+   and let the sky blend into the veil instead of cropping the sides */
+@media (max-aspect-ratio: 3/2){
+  .hero-bg{background-size:100% auto;background-position:center bottom}
+  .hero-video,.hero-seam{inset:auto 0 0 0;height:auto;object-fit:fill}
+}
+.hero-bg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 62% 55% at 50% 44%,
+      rgba(255,255,255,.85) 0%,
+      rgba(255,255,255,.55) 48%,
+      rgba(255,255,255,0) 78%),
+    linear-gradient(to bottom,
+      rgba(255,255,255,.9) 0%,
+      rgba(255,255,255,.45) 28%,
+      rgba(255,255,255,0) 58%,
+      rgba(255,255,255,0) 90%,
+      #fff 100%);
+}
+header.hero .container{position:relative;z-index:1}
+header.hero .lede{color:#3f3f3f;text-shadow:0 1px 16px rgba(255,255,255,.9),0 0 32px rgba(255,255,255,.7)}
+header.hero .btn-secondary{
+  background:rgba(255,255,255,.6);border-color:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+header.hero .btn-secondary:hover{background:rgba(255,255,255,.85)}
+.play-intro{color:#3f3f3f;text-shadow:0 1px 12px rgba(255,255,255,.9)}
+.play-intro .play-glyph{border-color:rgba(20,20,20,.3);background:rgba(255,255,255,.5)}
+.orb{
+  width:96px;height:96px;border-radius:26px;margin-bottom:var(--gap-2xl);
+  background:radial-gradient(circle at 32% 28%,var(--accent-bright) 0%,#ff9ec1 45%,var(--danger) 75%,var(--warning) 100%);
+  animation:hue 14s linear infinite;
+}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+.hero .hero-headline{max-width:14ch}
+.hero .lede{max-width:38ch;margin-top:var(--gap-l)}
+.cta-row{display:flex;gap:var(--gap-s);margin-top:var(--gap-2xl);flex-wrap:wrap;justify-content:center}
+.typed-cursor{color:var(--accent);animation:blink 1s steps(1) infinite;font-weight:var(--w-body)}
+@keyframes blink{50%{opacity:0}}
+.play-intro{
+  display:inline-flex;align-items:center;gap:10px;margin-top:var(--gap-3xl);
+  color:var(--text-secondary);text-decoration:none;font-size:var(--fs-small);letter-spacing:.2px;
+  transition:var(--transition-ui);
+}
+.play-intro:hover{color:var(--ink)}
+.play-glyph{
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--hairline-12);
+  display:inline-flex;align-items:center;justify-content:center;font-size:10px;
+}
+
+/* ============ carousels ============ */
+.carousel-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:var(--gap-2xl)}
+.carousel-nav{display:flex;gap:var(--gap-s)}
+.circle-btn{
+  width:48px;height:48px;border-radius:50%;border:1px solid var(--border-btn);background:transparent;
+  cursor:pointer;font-size:16px;color:var(--ink);transition:var(--transition-ui);
+}
+.circle-btn:hover{background:var(--hairline-6)}
+.track{
+  display:flex;gap:var(--gap-l);overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:4px 4px 24px;scrollbar-width:none;
+}
+.track::-webkit-scrollbar{display:none}
+.case-card{
+  flex:0 0 380px;scroll-snap-align:start;
+  border:1px solid var(--hairline-8);border-radius:var(--r-card-l);background:var(--surface);
+  overflow:hidden;display:flex;flex-direction:column;
+}
+.case-cover{aspect-ratio:16/10;background:#ededed;overflow:hidden}
+.case-cover video{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.02);transition:transform .5s ease}
+.case-card:hover .case-cover video{transform:scale(1.07)}
+.case-body{padding:var(--gap-l);display:flex;flex-direction:column;gap:var(--gap-s);flex:1}
+.badge{
+  align-self:flex-start;padding:4px 10px;border-radius:var(--r-pill);
+  border:1px solid var(--hairline-10);
+  font-size:12px;line-height:16px;letter-spacing:.06em;text-transform:uppercase;font-weight:var(--w-ui);
+  color:var(--text-secondary);
+}
+.arrow-link{
+  margin-top:auto;color:var(--ink);text-decoration:none;font-weight:var(--w-ui);font-size:var(--fs-small);
+  display:inline-flex;align-items:center;gap:6px;transition:var(--transition-ui);
+}
+.arrow-link:hover{color:var(--accent)}
+.arrow-link .arr{transition:transform .2s ease}
+.arrow-link:hover .arr{transform:translateX(3px)}
+
+/* ============ two-column showpiece ============ */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap-m)}
+.showpiece{
+  position:relative;overflow:hidden;border-radius:var(--r-card-l);
+  border:1px solid var(--hairline-8);padding:var(--gap-4xl) var(--gap-2xl);
+  min-height:520px;display:flex;flex-direction:column;justify-content:flex-end;gap:var(--gap-m);
+}
+.showpiece .morph{
+  position:absolute;width:420px;height:420px;border-radius:50%;filter:blur(60px);opacity:.5;z-index:0;
+  top:-120px;right:-100px;
+}
+.showpiece:nth-child(1) .morph{background:radial-gradient(circle,#b8d4ff,#ffd7e8 60%,transparent 75%)}
+.showpiece:nth-child(2) .morph{background:radial-gradient(circle,#ffe3d8,#d6f5c4 60%,transparent 75%)}
+.showpiece>*{position:relative;z-index:1}
+.showpiece h3{font-size:var(--fs-h2);line-height:var(--lh-h2);letter-spacing:var(--ls-h2);font-weight:var(--w-display)}
+.showpiece .lede{max-width:26ch}
+
+/* ============ blog slider ============ */
+.blog-card{
+  flex:0 0 320px;scroll-snap-align:start;
+  border:1px solid var(--hairline-8);border-radius:var(--r-card-m);overflow:hidden;background:var(--surface);
+  display:flex;flex-direction:column;
+}
+.blog-cover{aspect-ratio:16/10;background:linear-gradient(120deg,#e8f0ff,#ffe9f2 60%,#fff3d1)}
+.blog-card:nth-child(2n) .blog-cover{background:linear-gradient(120deg,#d6f5c4,#e8f0ff 60%,#ffd7e8)}
+.blog-card:nth-child(3n) .blog-cover{background:linear-gradient(120deg,#ffe3d8,#e8e4ff 60%,#d9f2ff)}
+.blog-body{padding:var(--gap-l);display:flex;flex-direction:column;gap:10px;flex:1}
+.meta{color:var(--text-tertiary);font-size:12px;line-height:16px;letter-spacing:.2px}
+.blog-body h6{font-size:18px;line-height:24px;font-weight:var(--w-display);letter-spacing:0}
+
+/* ============ dark band ============ */
+.dark-band{
+  background:var(--surface-dark);color:#fff;text-align:center;align-items:center;position:relative;overflow:hidden;
+}
+.cta-bg{position:absolute;inset:0;background:url('assets/cta-bg.jpg') center / cover no-repeat}
+.cta-bg::after{content:"";position:absolute;inset:0;background:rgba(20,20,20,.42)}
+.dark-band .heading-2{max-width:16ch;margin:0 auto}
+.dark-band .typed-cursor{color:var(--accent-bright)}
+
+/* ============ glass card (motion reference: glass layer) ============ */
+.glass{
+  -webkit-backdrop-filter:var(--nav-blur);backdrop-filter:var(--nav-blur);
+  background:var(--on-dark-8);border:1px solid var(--on-dark-16);border-radius:var(--r-card-m);
+  padding:var(--gap-l);color:#fff;
+}
+
+/* ============ footer ============ */
+footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hairline-8)}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--gap-2xl);margin-bottom:var(--gap-4xl)}
+.foot-grid h5{font-weight:var(--w-ui);font-size:var(--fs-small);color:var(--text-tertiary);margin-bottom:var(--gap-m);text-transform:uppercase;letter-spacing:.08em}
+.foot-grid ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.foot-grid a{color:var(--ink);text-decoration:none;font-size:var(--fs-small);transition:var(--transition-ui)}
+.foot-grid a:hover{color:var(--text-secondary)}
+.giant-wordmark{
+  font-weight:var(--w-display);font-size:clamp(80px,16vw,220px);line-height:.85;letter-spacing:-.02em;
+  color:var(--ink);user-select:none;
+}
+.foot-legal{display:flex;justify-content:space-between;align-items:center;margin-top:var(--gap-2xl);color:var(--text-tertiary);font-size:12px}
+.foot-legal .links{display:flex;gap:var(--gap-l)}
+.foot-legal a{color:var(--text-tertiary);text-decoration:none}
+
+/* ============ library (pinned stats + floating tiles) ============ */
+.library{position:relative;overflow:hidden;min-height:100vh}
+.library .stat-stack{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--gap-l);position:relative;z-index:1}
+.stat-eyebrow{font-weight:var(--w-display);font-size:var(--fs-h4);line-height:var(--lh-h4)}
+.stat-line{font-weight:var(--w-display);font-size:clamp(40px,6vw,92px);line-height:1.02;letter-spacing:var(--ls-hero);white-space:nowrap}
+.stat-dash{width:44px;height:4px;border-radius:var(--r-pill);background:var(--hairline-12);margin-top:var(--gap-xl);overflow:hidden}
+.stat-dash i{display:block;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:left}
+.tiles{position:absolute;inset:0;z-index:0;pointer-events:none}
+.float-tile{position:absolute;left:var(--x);top:var(--y)}
+.tile{
+  display:flex;align-items:center;justify-content:center;
+  width:var(--s);height:var(--s);border-radius:calc(var(--s)*.28);
+  background:#fff;border:1px solid var(--hairline-8);
+  will-change:transform;
+}
+.tile img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
+@media (max-width:809px){
+  .float-tile{display:none}
+  .float-tile:nth-child(-n+6){display:block}
+  .tile{width:calc(var(--s)*.7);height:calc(var(--s)*.7);border-radius:calc(var(--s)*.2);font-size:calc(var(--s)*.3)}
+}
+
+/* ============ how it works ============ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-l);margin-top:var(--gap-3xl)}
+.step{border-top:1px solid var(--hairline-10);padding-top:var(--gap-l);display:flex;flex-direction:column;gap:var(--gap-s)}
+.step-num{font-weight:var(--w-display);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--text-tertiary)}
+.step .small{color:var(--text-secondary);max-width:34ch}
+@media (max-width:809px){.steps{grid-template-columns:1fr;margin-top:var(--gap-xl)}}
+
+/* ============ states grid ============ */
+.states-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--gap-m)}
+.state-card{
+  display:flex;flex-direction:column;border:1px solid var(--hairline-8);border-radius:var(--r-card-s);
+  overflow:hidden;background:var(--surface);text-decoration:none;color:var(--ink);
+  transition:transform .3s ease;
+}
+.state-card:hover{transform:translateY(-4px)}
+.state-art{aspect-ratio:1;display:block;overflow:hidden}
+.state-art img{width:100%;height:100%;object-fit:cover;display:block}
+.state-name{padding:10px 12px;font-weight:var(--w-ui);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-align:center}
+@media (max-width:1199px) and (min-width:810px){.states-grid{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:809px){.states-grid{grid-template-columns:repeat(3,1fr);gap:10px}}
+
+/* ============ print & place ============ */
+.print-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:var(--gap-3xl);align-items:center}
+.print-fan{position:relative;height:440px}
+.mini-card{
+  position:absolute;top:50%;left:50%;width:210px;aspect-ratio:5/7;
+  background:#fdfbf6;border:1px solid var(--hairline-10);border-radius:16px;overflow:hidden;
+  box-shadow:var(--shadow-whisper);transition:transform .5s ease;
+}
+.mini-card img{width:100%;height:68%;object-fit:cover;display:block}
+.mini-label{height:32%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.mini-label .plaque-micro{font-size:9px}
+.mini-label .plaque-state{font-size:17px;line-height:20px}
+.mini-card:nth-child(1){transform:translate(-50%,-50%) translateX(-120px) rotate(-8deg)}
+.mini-card:nth-child(2){transform:translate(-50%,-50%) translateY(-10px);z-index:1}
+.mini-card:nth-child(3){transform:translate(-50%,-50%) translateX(120px) rotate(8deg)}
+.print-fan:hover .mini-card:nth-child(1){transform:translate(-50%,-50%) translateX(-150px) rotate(-11deg)}
+.print-fan:hover .mini-card:nth-child(2){transform:translate(-50%,-50%) translateY(-26px)}
+.print-fan:hover .mini-card:nth-child(3){transform:translate(-50%,-50%) translateX(150px) rotate(11deg)}
+.print-note{margin-top:var(--gap-m);font-size:var(--fs-small);color:var(--text-tertiary)}
+.spot-row{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--gap-m);margin-top:var(--gap-4xl)}
+.spot{border-top:1px solid var(--hairline-10);padding-top:14px}
+.spot b{display:block;font-weight:var(--w-ui);font-size:var(--fs-small);line-height:20px;margin-bottom:4px}
+.spot span{font-size:12px;color:var(--text-tertiary);line-height:16px;display:block}
+@media (max-width:1199px) and (min-width:810px){.spot-row{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:809px){
+  .print-grid{grid-template-columns:1fr}
+  .print-fan{height:340px}
+  .mini-card{width:160px}
+  .mini-card:nth-child(1){transform:translate(-50%,-50%) translateX(-85px) rotate(-8deg)}
+  .mini-card:nth-child(3){transform:translate(-50%,-50%) translateX(85px) rotate(8deg)}
+  .spot-row{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ============ finder quote ============ */
+#quote{text-align:center}
+#quote blockquote{
+  font-weight:var(--w-display);font-size:clamp(28px,3.2vw,44px);line-height:1.2;letter-spacing:-.4px;
+  max-width:26ch;margin:0 auto;
+}
+#quote cite{display:block;margin-top:var(--gap-l);font-style:normal;font-size:var(--fs-small);color:var(--text-tertiary);letter-spacing:.04em}
+
+/* ============ state card modal (lift + flip) ============ */
+.card-modal-root{position:fixed;inset:0;z-index:10000}
+.card-modal-root[hidden]{display:none}
+.card-scrim{position:absolute;inset:0;background:rgba(20,20,20,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0}
+.card-fly{position:fixed;z-index:1;perspective:1600px}
+.flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d}
+.card-face{
+  position:absolute;inset:0;border-radius:var(--r-card-l);overflow:hidden;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  background:#fdfbf6;border:1px solid var(--hairline-10);
+  box-shadow:0 24px 80px rgba(20,20,20,.25);
+}
+.card-back{transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px;text-align:center}
+.card-front .card-art{position:absolute;inset:0}
+.card-front .card-art img{width:100%;height:100%;object-fit:cover;display:block}
+.card-plaque{
+  position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
+  background:#fdfbf6;border:1px solid var(--hairline-12);border-radius:12px;
+  padding:10px 22px;text-align:center;white-space:nowrap;
+}
+.plaque-micro{display:block;font-size:10px;line-height:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);font-weight:var(--w-ui)}
+.plaque-state{display:block;font-size:22px;line-height:26px;font-weight:var(--w-display);letter-spacing:.06em;text-transform:uppercase;color:#5d7050}
+.card-back .back-mark{width:44px;height:44px}
+.card-back h5{font-size:18px;line-height:24px;font-weight:var(--w-display);letter-spacing:.08em;text-transform:uppercase;color:#5d7050}
+.card-back .back-msg{font-size:13px;line-height:19px;color:var(--text-secondary);max-width:30ch}
+.back-stats{width:100%;margin-top:6px}
+.back-stats div{display:flex;justify-content:space-between;padding:9px 2px;border-top:1px solid var(--hairline-10);font-size:12px;letter-spacing:.04em}
+.back-stats div span:first-child{text-transform:uppercase;color:var(--text-tertiary);font-weight:var(--w-ui)}
+.back-stats div span:last-child{font-weight:var(--w-ui);color:var(--ink)}
+.back-tag{font-size:11px;letter-spacing:.08em;color:#c2704a;font-weight:var(--w-ui);margin-top:4px}
+.modal-btns{position:absolute;left:50%;bottom:-64px;transform:translateX(-50%);display:flex;gap:12px}
+.modal-btns .btn{padding:12px 18px;font-size:var(--fs-small)}
+.modal-close-x{
+  position:absolute;top:-52px;right:0;width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;
+  font-size:18px;cursor:pointer;transition:var(--transition-ui);
+}
+.modal-close-x:hover{background:rgba(255,255,255,.3)}
+
+/* ============ reveal initial states (GSAP animates in) ============ */
+[data-reveal]{opacity:0;transform:translateY(40px)}
+.no-js [data-reveal],.reduced-motion [data-reveal]{opacity:1;transform:none}
+
+/* ============ responsive ============ */
+@media (max-width:1199px) and (min-width:810px){
+  .hero-headline{font-size:64px;line-height:64px}
+  .heading-2,.showpiece h3{font-size:44px;line-height:44px}
+}
+@media (max-width:809px){
+  :root{--section-pad:80px;--page-margin:20px}
+  section,header.hero,.dark-band{min-height:auto}
+  .hero-headline{font-size:44px;line-height:44px;letter-spacing:-.4px}
+  .heading-2,.showpiece h3{font-size:32px;line-height:36px;letter-spacing:0}
+  .nav-links{display:none}
+  .two-col{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .case-card{flex-basis:300px}
+}
+</style>
+</head>
+<body class="no-js">
+<script>document.body.classList.remove('no-js')</script>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- 01 · NAV -->
+<div class="nav-wrap">
+  <nav class="pill">
+    <a class="brand" href="#"><span class="brand-mark"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 14.8C13 12.2 10.6 10.4 10.6 8.2C10.6 6.5 12 5.2 13.6 5.2C14.6 5.2 15.5 5.7 16 6.5C16.5 5.7 17.4 5.2 18.4 5.2C20 5.2 21.4 6.5 21.4 8.2C21.4 10.4 19 12.2 16 14.8Z" fill="#c2704a"/><ellipse cx="16" cy="20.5" rx="6.5" ry="2.4" fill="none" stroke="#5d7050" stroke-width="1.8"/><ellipse cx="16" cy="21.8" rx="11.5" ry="4.2" fill="none" stroke="#5d7050" stroke-width="1.4" opacity="0.5"/></svg></span>Ripple</a>
+    <ul class="nav-links">
+      <li><a href="#use-cases">Ideas</a></li>
+      <li><a href="#showpiece">Cards</a></li>
+      <li><a href="#print">Print</a></li>
+      <li><a href="#journal">Stories</a></li>
+      <li><a href="#states">States</a></li>
+    </ul>
+    <a class="btn btn-primary btn-sm" href="#get-started">Join</a>
+  </nav>
+</div>
+
+<!-- 02 · HERO -->
+<header class="hero">
+  <div class="hero-bg" aria-hidden="true"><video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/hero-bg-valley.jpg" src="assets/hero-bg-loop.mp4"></video></div>
+  <div class="container" style="display:flex;flex-direction:column;align-items:center">
+    <div class="orb" data-reveal></div>
+    <h1 class="hero-headline"><span id="typed" data-text="You found a ripple."></span><span class="typed-cursor">|</span></h1>
+    <p class="lede" data-reveal>Someone left a little kindness in the world. It found you.</p>
+    <div class="cta-row" data-reveal>
+      <a class="btn btn-primary" href="#get-started">Join the ripple</a>
+      <a class="btn btn-secondary" href="#how">How it works <span class="arr">→</span></a>
+    </div>
+    <a class="play-intro" href="#" data-reveal><span class="play-glyph">▶</span> Play the story</a>
+  </div>
+</header>
+
+<!-- 02b · LIBRARY (pinned stats, lines reveal on scroll while frame holds) -->
+<section class="library" id="library" aria-label="Archive stats">
+  <div class="tiles" aria-hidden="true">
+    <div class="float-tile" style="--x:4%;--y:8%;--s:88px"><span class="tile"><img src="assets/state-iowa.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:88%;--y:6%;--s:76px"><span class="tile"><img src="assets/state-texas.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:92%;--y:34%;--s:88px"><span class="tile"><img src="assets/state-colorado.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:11%;--y:82%;--s:80px"><span class="tile"><img src="assets/state-vermont.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:89%;--y:80%;--s:76px"><span class="tile"><img src="assets/state-alaska.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:3%;--y:54%;--s:72px"><span class="tile"><img src="assets/state-washington.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:12%;--y:30%;--s:64px"><span class="tile"><img src="assets/state-arizona.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:22%;--y:10%;--s:60px"><span class="tile"><img src="assets/state-maine.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:85%;--y:56%;--s:64px"><span class="tile"><img src="assets/state-newyork.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:26%;--y:86%;--s:64px"><span class="tile"><img src="assets/state-montana.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:72%;--y:88%;--s:56px"><span class="tile"><img src="assets/state-louisiana.jpg" alt=""></span></div>
+    <div class="float-tile" style="--x:72%;--y:11%;--s:56px"><span class="tile"><img src="assets/state-hawaii.jpg" alt=""></span></div>
+  </div>
+  <div class="container stat-stack">
+    <p class="stat-eyebrow">One small act, then another</p>
+    <h2 class="stat-line">12,400 cards found</h2>
+    <h2 class="stat-line">50 states reached</h2>
+    <h2 class="stat-line">one ripple at a time</h2>
+    <span class="stat-dash"><i></i></span>
+  </div>
+</section>
+
+<!-- 02c · HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <p class="eyebrow" data-reveal>The loop</p>
+    <h2 class="heading-2" data-reveal style="margin-top:12px">How a ripple works</h2>
+    <div class="steps">
+      <div class="step" data-reveal>
+        <span class="step-num">01</span>
+        <h4 class="heading-4">Print a card</h4>
+        <p class="small">Print a sheet at home in one minute — or start with a card you found.</p>
+      </div>
+      <div class="step" data-reveal>
+        <span class="step-num">02</span>
+        <h4 class="heading-4">Do something kind</h4>
+        <p class="small">Flowers, a note, a coffee. Small is the whole point.</p>
+      </div>
+      <div class="step" data-reveal>
+        <span class="step-num">03</span>
+        <h4 class="heading-4">Leave it anywhere</h4>
+        <p class="small">A bench, a book, a coffee counter. Whoever finds it takes the next turn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02d · PRINT & PLACE -->
+<section id="print">
+  <div class="container-wide">
+    <div class="print-grid">
+      <div>
+        <p class="eyebrow" data-reveal>Free, forever</p>
+        <h2 class="heading-2" data-reveal style="margin-top:12px">Print one. Leave it anywhere.</h2>
+        <p class="lede" data-reveal style="margin-top:16px;max-width:34ch">That’s the whole idea. A card you print at home becomes the best part of a stranger’s week.</p>
+        <div class="cta-row" data-reveal style="justify-content:flex-start;margin-top:var(--gap-l)">
+          <a class="btn btn-primary" href="print.html" target="_blank">Print your cards</a>
+          <a class="btn btn-secondary" href="#use-cases">Need an idea? <span class="arr">→</span></a>
+        </div>
+        <p class="print-note" data-reveal>One sheet, four cards · fits any printer · lovely in black &amp; white too</p>
+      </div>
+      <div class="print-fan" data-reveal aria-hidden="true">
+        <div class="mini-card"><img src="assets/state-iowa.jpg" alt=""><span class="mini-label"><span class="plaque-micro">This ripple started in</span><span class="plaque-state">Iowa</span></span></div>
+        <div class="mini-card"><img src="assets/state-colorado.jpg" alt=""><span class="mini-label"><span class="plaque-micro">This ripple started in</span><span class="plaque-state">Colorado</span></span></div>
+        <div class="mini-card"><img src="assets/state-maine.jpg" alt=""><span class="mini-label"><span class="plaque-micro">This ripple started in</span><span class="plaque-state">Maine</span></span></div>
+      </div>
+    </div>
+    <div class="spot-row">
+      <div class="spot" data-reveal><b>In a library book</b><span>Page 100 of a favorite. The next reader earns it.</span></div>
+      <div class="spot" data-reveal><b>On a coffee counter</b><span>Next to the sugar. Pay for the next order if you can.</span></div>
+      <div class="spot" data-reveal><b>At a trailhead</b><span>Under a stone at the map board.</span></div>
+      <div class="spot" data-reveal><b>On a park bench</b><span>Weighted with a pebble, waiting.</span></div>
+      <div class="spot" data-reveal><b>In a gym locker</b><span>Someone’s hardest hour just got lighter.</span></div>
+      <div class="spot" data-reveal><b>On a windshield</b><span>Better than a parking ticket.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 · USE CASES -->
+<section id="use-cases">
+  <div class="container-wide">
+    <div class="carousel-head">
+      <div>
+        <p class="eyebrow" data-reveal>Keep it moving</p>
+        <h2 class="heading-2" data-reveal style="margin-top:12px">Five ways to start a ripple</h2>
+      </div>
+      <div class="carousel-nav" data-reveal>
+        <button class="circle-btn" data-track="cases" data-dir="-1" aria-label="Previous">←</button>
+        <button class="circle-btn" data-track="cases" data-dir="1" aria-label="Next">→</button>
+      </div>
+    </div>
+    <div class="track" id="cases" data-reveal-group>
+      <!-- repeat ×5 -->
+      <article class="case-card" data-reveal><div class="case-cover"><video muted loop playsinline preload="none" poster="assets/case-design.jpg" src="assets/case-design.mp4"></video></div><div class="case-body"><span class="badge">Flowers</span><h4 class="heading-4">Leave flowers for a stranger</h4><p class="small" style="color:var(--text-secondary)">Pick a few on your walk and leave them where someone will find them.</p><a class="arrow-link" href="#">View case <span class="arr">→</span></a></div></article>
+      <article class="case-card" data-reveal><div class="case-cover"><video muted loop playsinline preload="none" poster="assets/case-product.jpg" src="assets/case-product.mp4"></video></div><div class="case-body"><span class="badge">Books</span><h4 class="heading-4">Share a favorite book</h4><p class="small" style="color:var(--text-secondary)">Leave it on a bench with a note inside: this one mattered to me.</p><a class="arrow-link" href="#">View case <span class="arr">→</span></a></div></article>
+      <article class="case-card" data-reveal><div class="case-cover"><video muted loop playsinline preload="none" poster="assets/case-marketing.jpg" src="assets/case-marketing.mp4"></video></div><div class="case-body"><span class="badge">Notes</span><h4 class="heading-4">Write an encouraging note</h4><p class="small" style="color:var(--text-secondary)">Tuck it under a door, in a mailbox, inside a library book.</p><a class="arrow-link" href="#">View case <span class="arr">→</span></a></div></article>
+      <article class="case-card" data-reveal><div class="case-cover"><video muted loop playsinline preload="none" poster="assets/case-founders.jpg" src="assets/case-founders.mp4"></video></div><div class="case-body"><span class="badge">Rocks</span><h4 class="heading-4">Paint a kindness rock</h4><p class="small" style="color:var(--text-secondary)">Leave it on a trail for the next hiker to find.</p><a class="arrow-link" href="#">View case <span class="arr">→</span></a></div></article>
+      <article class="case-card" data-reveal><div class="case-cover"><video muted loop playsinline preload="none" poster="assets/case-ops.jpg" src="assets/case-ops.mp4"></video></div><div class="case-body"><span class="badge">Plants</span><h4 class="heading-4">Give someone a plant</h4><p class="small" style="color:var(--text-secondary)">A cutting from your kitchen jar is plenty. Watch it grow.</p><a class="arrow-link" href="#">View case <span class="arr">→</span></a></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · TWO-COLUMN SHOWPIECE -->
+<section id="showpiece">
+  <div class="container-wide">
+    <div class="two-col">
+      <div class="showpiece" data-reveal>
+        <div class="morph" data-morph></div>
+        <span class="badge">The card</span>
+        <h3>Take it, pass it on</h3>
+        <p class="lede">Every card carries its story from state to state.</p>
+        <div class="cta-row" style="margin-top:var(--gap-m);justify-content:flex-start">
+          <a class="btn btn-primary" href="print.html" target="_blank">Print cards</a>
+          <a class="btn btn-secondary" href="#">See the story</a>
+        </div>
+      </div>
+      <div class="showpiece" data-reveal>
+        <div class="morph" data-morph></div>
+        <span class="badge">The map</span>
+        <h3>Every state, connected</h3>
+        <p class="lede">Follow each ripple’s journey from hand to hand.</p>
+        <div class="cta-row" style="margin-top:var(--gap-m);justify-content:flex-start">
+          <a class="btn btn-primary" href="#">Open the map</a>
+          <a class="btn btn-secondary" href="#">Learn more</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04b · STATES -->
+<section id="states">
+  <div class="container-wide">
+    <div style="text-align:center;max-width:640px;margin:0 auto var(--gap-3xl)">
+      <p class="eyebrow" data-reveal>Every state</p>
+      <h2 class="heading-2" data-reveal style="margin-top:12px">All fifty, all connected</h2>
+      <p class="lede" data-reveal style="margin-top:16px">Collect a card from every state to see how far kindness can travel.</p>
+    </div>
+    <div class="states-grid">
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-alabama.jpg" alt="Alabama"></span><span class="state-name">Alabama</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-alaska.jpg" alt="Alaska"></span><span class="state-name">Alaska</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-arizona.jpg" alt="Arizona"></span><span class="state-name">Arizona</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-arkansas.jpg" alt="Arkansas"></span><span class="state-name">Arkansas</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-california.jpg" alt="California"></span><span class="state-name">California</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-colorado.jpg" alt="Colorado"></span><span class="state-name">Colorado</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-connecticut.jpg" alt="Connecticut"></span><span class="state-name">Connecticut</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-delaware.jpg" alt="Delaware"></span><span class="state-name">Delaware</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-florida.jpg" alt="Florida"></span><span class="state-name">Florida</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-georgia.jpg" alt="Georgia"></span><span class="state-name">Georgia</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-hawaii.jpg" alt="Hawaii"></span><span class="state-name">Hawaii</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-idaho.jpg" alt="Idaho"></span><span class="state-name">Idaho</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-illinois.jpg" alt="Illinois"></span><span class="state-name">Illinois</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-indiana.jpg" alt="Indiana"></span><span class="state-name">Indiana</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-iowa.jpg" alt="Iowa"></span><span class="state-name">Iowa</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-kansas.jpg" alt="Kansas"></span><span class="state-name">Kansas</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-kentucky.jpg" alt="Kentucky"></span><span class="state-name">Kentucky</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-louisiana.jpg" alt="Louisiana"></span><span class="state-name">Louisiana</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-maine.jpg" alt="Maine"></span><span class="state-name">Maine</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-maryland.jpg" alt="Maryland"></span><span class="state-name">Maryland</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-massachusetts.jpg" alt="Massachusetts"></span><span class="state-name">Massachusetts</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-michigan.jpg" alt="Michigan"></span><span class="state-name">Michigan</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-minnesota.jpg" alt="Minnesota"></span><span class="state-name">Minnesota</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-mississippi.jpg" alt="Mississippi"></span><span class="state-name">Mississippi</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-missouri.jpg" alt="Missouri"></span><span class="state-name">Missouri</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-montana.jpg" alt="Montana"></span><span class="state-name">Montana</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-nebraska.jpg" alt="Nebraska"></span><span class="state-name">Nebraska</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-nevada.jpg" alt="Nevada"></span><span class="state-name">Nevada</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-newhampshire.jpg" alt="New Hampshire"></span><span class="state-name">New Hampshire</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-newjersey.jpg" alt="New Jersey"></span><span class="state-name">New Jersey</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-newmexico.jpg" alt="New Mexico"></span><span class="state-name">New Mexico</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-newyork.jpg" alt="New York"></span><span class="state-name">New York</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-northcarolina.jpg" alt="North Carolina"></span><span class="state-name">North Carolina</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-northdakota.jpg" alt="North Dakota"></span><span class="state-name">North Dakota</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-ohio.jpg" alt="Ohio"></span><span class="state-name">Ohio</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-oklahoma.jpg" alt="Oklahoma"></span><span class="state-name">Oklahoma</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-oregon.jpg" alt="Oregon"></span><span class="state-name">Oregon</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-pennsylvania.jpg" alt="Pennsylvania"></span><span class="state-name">Pennsylvania</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-rhodeisland.jpg" alt="Rhode Island"></span><span class="state-name">Rhode Island</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-southcarolina.jpg" alt="South Carolina"></span><span class="state-name">South Carolina</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-southdakota.jpg" alt="South Dakota"></span><span class="state-name">South Dakota</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-tennessee.jpg" alt="Tennessee"></span><span class="state-name">Tennessee</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-texas.jpg" alt="Texas"></span><span class="state-name">Texas</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-utah.jpg" alt="Utah"></span><span class="state-name">Utah</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-vermont.jpg" alt="Vermont"></span><span class="state-name">Vermont</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-virginia.jpg" alt="Virginia"></span><span class="state-name">Virginia</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-washington.jpg" alt="Washington"></span><span class="state-name">Washington</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-westvirginia.jpg" alt="West Virginia"></span><span class="state-name">West Virginia</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-wisconsin.jpg" alt="Wisconsin"></span><span class="state-name">Wisconsin</span></a>
+      <a class="state-card" data-reveal href="#"><span class="state-art"><img loading="lazy" src="assets/state-wyoming.jpg" alt="Wyoming"></span><span class="state-name">Wyoming</span></a>
+    </div>
+    <p class="small" data-reveal style="text-align:center;margin-top:var(--gap-xl);color:var(--text-tertiary)">All fifty, ready to be found.</p>
+  </div>
+</section>
+
+<!-- 04c · FINDER QUOTE -->
+<section id="quote">
+  <div class="container">
+    <blockquote data-reveal>“I found mine taped to a gas pump outside Toledo. It rode in my glovebox for a week — then I tucked it into a cookbook in a Denver thrift store.”</blockquote>
+    <cite data-reveal>— the eleventh keeper of card #4,201, somewhere between Ohio and Colorado</cite>
+  </div>
+</section>
+
+<!-- 05 · JOURNAL SLIDER -->
+<section id="journal">
+  <div class="container-wide">
+    <div class="carousel-head">
+      <h2 class="heading-2" data-reveal>Ripple stories</h2>
+      <div class="carousel-nav" data-reveal>
+        <button class="circle-btn" data-track="posts" data-dir="-1" aria-label="Previous">←</button>
+        <button class="circle-btn" data-track="posts" data-dir="1" aria-label="Next">→</button>
+      </div>
+    </div>
+    <div class="track" id="posts">
+      <!-- repeat ×6 -->
+      <article class="blog-card" data-reveal><div class="blog-cover"></div><div class="blog-body"><p class="meta">Jul 2026 · Iowa</p><h6>The ripple that started in a diner</h6><a class="arrow-link" href="#">Read <span class="arr">→</span></a></div></article>
+      <article class="blog-card" data-reveal><div class="blog-cover"></div><div class="blog-body"><p class="meta">Jun 2026 · Vermont</p><h6>The library book with 41 notes</h6><a class="arrow-link" href="#">Read <span class="arr">→</span></a></div></article>
+      <article class="blog-card" data-reveal><div class="blog-cover"></div><div class="blog-body"><p class="meta">Jun 2026 · Texas</p><h6>Bluebonnets on a stranger’s porch</h6><a class="arrow-link" href="#">Read <span class="arr">→</span></a></div></article>
+      <article class="blog-card" data-reveal><div class="blog-cover"></div><div class="blog-body"><p class="meta">May 2026 · Alaska</p><h6>Kindness rocks above the timberline</h6><a class="arrow-link" href="#">Read <span class="arr">→</span></a></div></article>
+      <article class="blog-card" data-reveal><div class="blog-cover"></div><div class="blog-body"><p class="meta">May 2026 · Ohio</p><h6>Coffee for the whole night shift</h6><a class="arrow-link" href="#">Read <span class="arr">→</span></a></div></article>
+      <article class="blog-card" data-reveal><div class="blog-cover"></div><div class="blog-body"><p class="meta">Apr 2026 · Maine</p><h6>A lighthouse keeper finds card 9,000</h6><a class="arrow-link" href="#">Read <span class="arr">→</span></a></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- 06 · DARK CTA BAND -->
+<section class="dark-band" id="get-started">
+  <div class="cta-bg" aria-hidden="true"></div>
+  <div class="container" style="position:relative;z-index:1">
+    <h2 class="heading-2"><span id="typed-dark" data-text="You never know where yours ends."></span><span class="typed-cursor">|</span></h2>
+    <div class="cta-row">
+      <a class="btn btn-light" href="print.html" target="_blank">Print your first card</a>
+    </div>
+  </div>
+</section>
+
+<!-- 07 · FOOTER -->
+<footer>
+  <div class="container-wide">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#" style="margin-bottom:16px"><span class="brand-mark"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 14.8C13 12.2 10.6 10.4 10.6 8.2C10.6 6.5 12 5.2 13.6 5.2C14.6 5.2 15.5 5.7 16 6.5C16.5 5.7 17.4 5.2 18.4 5.2C20 5.2 21.4 6.5 21.4 8.2C21.4 10.4 19 12.2 16 14.8Z" fill="#c2704a"/><ellipse cx="16" cy="20.5" rx="6.5" ry="2.4" fill="none" stroke="#5d7050" stroke-width="1.8"/><ellipse cx="16" cy="21.8" rx="11.5" ry="4.2" fill="none" stroke="#5d7050" stroke-width="1.4" opacity="0.5"/></svg></span>Ripple</a>
+        <p class="small" style="color:var(--text-secondary);margin-top:12px;max-width:24ch">A little kindness. Every state. All connected.</p>
+      </div>
+      <div><h5>The ripple</h5><ul><li><a href="#use-cases">Ideas</a></li><li><a href="#showpiece">Cards</a></li>
+      <li><a href="#print">Print</a></li><li><a href="print.html" target="_blank">Print cards</a></li></ul></div>
+      <div><h5>Movement</h5><ul><li><a href="#">About</a></li><li><a href="#journal">Stories</a></li><li><a href="#">Contact</a></li></ul></div>
+      <div><h5>Legal</h5><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>
+    </div>
+    <div class="giant-wordmark" data-reveal>RIPPLE</div>
+    <div class="foot-legal">
+      <span>© 2026 Ripple</span>
+      <span class="links"><a href="#">Privacy</a><a href="#">Terms</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- STATE CARD MODAL -->
+<div class="card-modal-root" id="card-modal" hidden>
+  <div class="card-scrim"></div>
+  <div class="card-fly">
+    <div class="flip-inner">
+      <div class="card-face card-front">
+        <span class="card-art"><img src="" alt=""></span>
+        <div class="card-plaque">
+          <span class="plaque-micro">This ripple started in</span>
+          <span class="plaque-state">Iowa</span>
+        </div>
+      </div>
+      <div class="card-face card-back">
+        <svg class="back-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 14.8C13 12.2 10.6 10.4 10.6 8.2C10.6 6.5 12 5.2 13.6 5.2C14.6 5.2 15.5 5.7 16 6.5C16.5 5.7 17.4 5.2 18.4 5.2C20 5.2 21.4 6.5 21.4 8.2C21.4 10.4 19 12.2 16 14.8Z" fill="#c2704a"/><ellipse cx="16" cy="20.5" rx="6.5" ry="2.4" fill="none" stroke="#5d7050" stroke-width="1.8"/><ellipse cx="16" cy="21.8" rx="11.5" ry="4.2" fill="none" stroke="#5d7050" stroke-width="1.4" opacity="0.5"/></svg>
+        <h5>Keep the ripple moving</h5>
+        <p class="back-msg">If this brought a smile to your face, help someone else experience the same.</p>
+        <div class="back-stats">
+          <div><span>Cards found here</span><span data-stat="found">—</span></div>
+          <div><span>First ripple</span><span data-stat="first">—</span></div>
+          <div><span>Traveled to</span><span data-stat="traveled">—</span></div>
+        </div>
+        <span class="back-tag">#KeepTheRippleMoving</span>
+      </div>
+    </div>
+    <button class="modal-close-x" aria-label="Close">✕</button>
+    <div class="modal-btns">
+      <button class="btn btn-light flip-btn">Flip the card</button>
+    </div>
+  </div>
+</div>
+
+<!-- Motion stack: Lenis smooth scroll + GSAP ScrollTrigger (per reference post) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    document.documentElement.classList.add('reduced-motion');
+    var hv = document.querySelector('.hero-video');
+    if (hv) hv.remove(); /* fall back to the static poster image */
+  }
+
+  /* ---- typed-letter headline (word-wrap safe: types word by word into spans) ---- */
+  function typeInto(id, done){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var text = el.getAttribute('data-text');
+    if(reduced){ el.textContent = text; if(done) done(); return; }
+    var words = text.split(' ');
+    var spans = words.map(function(w){
+      var s = document.createElement('span');
+      s.style.whiteSpace = 'nowrap';
+      s.dataset.word = w;
+      return s;
+    });
+    spans.forEach(function(s,i){ el.appendChild(s); if(i < spans.length-1) el.appendChild(document.createTextNode(' ')); });
+    var wi = 0, ci = 0;
+    (function tick(){
+      if(wi >= spans.length){ if(done) done(); return; }
+      var word = spans[wi].dataset.word;
+      ci++;
+      spans[wi].textContent = word.slice(0, ci);
+      if(ci >= word.length){ wi++; ci = 0; }
+      setTimeout(tick, 45);
+    })();
+  }
+  typeInto('typed');
+
+  if (reduced || typeof gsap === 'undefined') return;
+
+  /* ---- Lenis smooth scroll, driven by the GSAP ticker ---- */
+  gsap.registerPlugin(ScrollTrigger);
+  var lenis = new Lenis({ lerp: 0.1 });
+  window.lenis = lenis;
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(function(t){ lenis.raf(t * 1000); });
+  gsap.ticker.lagSmoothing(0);
+
+  /* ---- scroll reveals: rise 40px + fade, staggered per section ---- */
+  document.querySelectorAll('section, header.hero, footer').forEach(function(sec){
+    var items = sec.querySelectorAll('[data-reveal]');
+    if(!items.length) return;
+    gsap.to(items, {
+      opacity: 1, y: 0,
+      duration: 0.9, ease: 'power3.out', stagger: 0.08,
+      scrollTrigger: { trigger: sec, start: 'top 80%' }
+    });
+  });
+
+  /* ---- scroll pacing: hero orb + headline drift up as you leave the hero ---- */
+  gsap.to('header.hero .container', {
+    y: -80, opacity: 0.4, ease: 'none',
+    scrollTrigger: { trigger: 'header.hero', start: 'bottom 90%', end: 'bottom 30%', scrub: true }
+  });
+  /* backdrop breathes: slow zoom + drift as the hero scrolls away */
+  gsap.to('.hero-bg', {
+    yPercent: 6, scale: 1.14, ease: 'none',
+    scrollTrigger: { trigger: 'header.hero', start: 'top top', end: 'bottom top', scrub: true }
+  });
+  /* mask the loop seam: crossfade the video's own first frame around the restart */
+  var heroVideo = document.querySelector('.hero-video');
+  if (heroVideo) {
+    var seam = document.createElement('canvas');
+    seam.className = 'hero-seam';
+    heroVideo.parentNode.appendChild(seam);
+    var probe = document.createElement('video');
+    probe.src = heroVideo.getAttribute('src');
+    probe.muted = true; probe.preload = 'auto';
+    probe.addEventListener('loadeddata', function(){
+      seam.width = probe.videoWidth; seam.height = probe.videoHeight;
+      seam.getContext('2d').drawImage(probe, 0, 0);
+      probe.removeAttribute('src'); probe.load();
+    }, { once: true });
+    probe.load();
+    var SEAM_FADE = 0.5;
+    gsap.ticker.add(function(){
+      var d = heroVideo.duration, t = heroVideo.currentTime, o = 0;
+      if (d) {
+        if (t > d - SEAM_FADE) o = (t - (d - SEAM_FADE)) / SEAM_FADE;
+        else if (t < SEAM_FADE) o = 1 - t / SEAM_FADE;
+      }
+      seam.style.opacity = o.toFixed(3);
+    });
+  }
+
+  /* ---- morphing orbs in the showpiece cards, scrubbed by scroll ---- */
+  document.querySelectorAll('[data-morph]').forEach(function(m, i){
+    gsap.to(m, {
+      x: i % 2 ? -120 : 80, y: 140, scale: 1.35, ease: 'none',
+      scrollTrigger: { trigger: m.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true }
+    });
+    gsap.to(m, { rotate: 180, borderRadius: '38%', duration: 9, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  });
+
+  /* ---- library: pin the frame, reveal stat lines with scroll progress ---- */
+  var lib = document.getElementById('library');
+  if (lib) {
+    var eyebrow = lib.querySelector('.stat-eyebrow');
+    var statLines = lib.querySelectorAll('.stat-line');
+    var dash = lib.querySelector('.stat-dash i');
+    gsap.set(eyebrow, { opacity: 0, y: 30 });
+    gsap.set(statLines, { opacity: 0, y: 110 });
+    /* eyebrow loads in as the section arrives — already visible when the frame locks */
+    gsap.to(eyebrow, {
+      opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: lib, start: 'top 75%' }
+    });
+    var libTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: lib, start: 'top top', end: '+=170%',
+        pin: true, scrub: 0.7,
+        onUpdate: function(self){ if (dash) dash.style.transform = 'scaleX(' + self.progress + ')'; }
+      }
+    });
+    libTl.to({}, { duration: 0.35 }); /* a beat with only the eyebrow, like the source */
+    statLines.forEach(function(line){
+      libTl.to(line, { opacity: 1, y: 0, color: '#adadad', duration: 1.1, ease: 'power3.out' })
+           .to(line, { color: '#141414', duration: 0.45 }, '-=0.25');
+    });
+    libTl.to({}, { duration: 0.5 }); /* hold the finished frame a beat */
+    /* smooth organic wander: each tile eases to a new random offset every cycle */
+    lib.querySelectorAll('.tile').forEach(function(el, i){
+      gsap.to(el, {
+        x: 'random(-30, 30)', y: 'random(-26, 26)', rotation: 'random(-6, 6)',
+        duration: 'random(3.5, 6)', ease: 'sine.inOut',
+        repeat: -1, repeatRefresh: true, delay: (i % 5) * 0.4
+      });
+    });
+  }
+
+  /* ---- color tint: page warms as the dark band approaches ---- */
+  gsap.to('body', {
+    backgroundColor: '#f7f5f2', ease: 'none',
+    scrollTrigger: { trigger: '#journal', start: 'top bottom', end: 'top top', scrub: true }
+  });
+  gsap.to('body', {
+    backgroundColor: '#ffffff', ease: 'none',
+    scrollTrigger: { trigger: '#get-started', start: 'top bottom', end: 'top center', scrub: true }
+  });
+
+  /* ---- dark-band typed headline fires when it enters ---- */
+  var darkTyped = false;
+  ScrollTrigger.create({
+    trigger: '#get-started', start: 'top 70%',
+    onEnter: function(){ if(!darkTyped){ darkTyped = true; typeInto('typed-dark'); } }
+  });
+
+  /* ---- card covers: play the ambient loop on hover ---- */
+  document.querySelectorAll('.case-card').forEach(function(card){
+    var vid = card.querySelector('.case-cover video');
+    if (!vid) return;
+    card.addEventListener('mouseenter', function(){ vid.play(); });
+    card.addEventListener('mouseleave', function(){ vid.pause(); });
+  });
+
+  /* ---- state card modal: lift, expand, flip ---- */
+  (function(){
+    var root = document.getElementById('card-modal');
+    if (!root) return;
+    var scrim = root.querySelector('.card-scrim');
+    var fly = root.querySelector('.card-fly');
+    var inner = root.querySelector('.flip-inner');
+    var frontImg = root.querySelector('.card-front img');
+    var plaque = root.querySelector('.plaque-state');
+    var openFrom = null, isOpen = false, closing = false, curT = null;
+    var plaqueBox = root.querySelector('.card-plaque');
+    var chrome = [root.querySelector('.modal-close-x'), root.querySelector('.modal-btns')];
+
+    function hashNum(s){ var h = 7; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 9973; return h; }
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    function targetRect(){
+      var w = Math.min(400, window.innerWidth - 48);
+      var h = Math.min(w * 1.4, window.innerHeight - 160);
+      return { left: (window.innerWidth - w) / 2, top: (window.innerHeight - h) / 2 - 16, width: w, height: h };
+    }
+
+    function openCard(card){
+      if (isOpen) return;
+      isOpen = true; openFrom = card;
+      var img = card.querySelector('img');
+      var name = card.querySelector('.state-name').textContent;
+      frontImg.src = img.src; frontImg.alt = name;
+      plaque.textContent = name;
+      var h = hashNum(name);
+      root.querySelector('[data-stat="found"]').textContent = (120 + h % 680).toLocaleString();
+      root.querySelector('[data-stat="first"]').textContent = MONTHS[h % 12] + ' ' + (2024 + h % 3);
+      root.querySelector('[data-stat="traveled"]').textContent = (3 + h % 42) + ' states';
+      var r = card.getBoundingClientRect(), t = targetRect();
+      curT = t;
+      root.hidden = false;
+      gsap.set(inner, { rotateY: 0 });
+      /* FLIP: size the card at its final dimensions, then scale-transform from the
+         origin rect — children scale as one unit, so text never reflows mid-flight */
+      gsap.set(fly, { left: t.left, top: t.top, width: t.width, height: t.height, transformOrigin: '0 0' });
+      card.style.visibility = 'hidden';
+      if (window.lenis) window.lenis.stop();
+      gsap.to(scrim, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+      gsap.fromTo(fly,
+        { x: r.left - t.left, y: r.top - t.top, scaleX: r.width / t.width, scaleY: r.height / t.height },
+        { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.55, ease: 'power3.inOut' });
+      gsap.fromTo([plaqueBox].concat(chrome),
+        { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.4, stagger: 0.06, ease: 'power2.out' });
+    }
+
+    function closeCard(){
+      if (!isOpen || closing) return;
+      closing = true;
+      var r = openFrom.getBoundingClientRect(), t = curT;
+      /* text and chrome fade out first, then the card scales home as one unit */
+      gsap.to([plaqueBox].concat(chrome), { opacity: 0, duration: 0.15, ease: 'power1.out' });
+      gsap.to(inner, { rotateY: 0, duration: 0.25, ease: 'power2.inOut' });
+      gsap.to(scrim, { opacity: 0, duration: 0.4, ease: 'power2.in' });
+      gsap.to(fly, {
+        x: r.left - t.left, y: r.top - t.top,
+        scaleX: r.width / t.width, scaleY: r.height / t.height,
+        duration: 0.5, ease: 'power3.inOut',
+        onComplete: function(){
+          root.hidden = true;
+          openFrom.style.visibility = '';
+          gsap.set(fly, { clearProps: 'transform' });
+          gsap.set([plaqueBox].concat(chrome), { clearProps: 'opacity' });
+          if (window.lenis) window.lenis.start();
+          isOpen = false; closing = false;
+        }});
+    }
+
+    document.querySelectorAll('.state-card').forEach(function(card){
+      card.addEventListener('click', function(e){ e.preventDefault(); openCard(card); });
+    });
+    root.querySelector('.flip-btn').addEventListener('click', function(){
+      gsap.to(inner, { rotateY: '+=180', duration: 0.65, ease: 'power2.inOut' });
+    });
+    root.querySelector('.modal-close-x').addEventListener('click', closeCard);
+    scrim.addEventListener('click', closeCard);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeCard(); });
+  })();
+
+  /* ---- carousel buttons ---- */
+  document.querySelectorAll('.circle-btn[data-track]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var track = document.getElementById(btn.dataset.track);
+      var card = track.firstElementChild;
+      var step = (card ? card.getBoundingClientRect().width : 380) + 24;
+      track.scrollBy({ left: step * Number(btn.dataset.dir), behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
