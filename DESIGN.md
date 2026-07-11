@@ -334,7 +334,7 @@ any clause:
   cards, ≤2304px for backdrops).
 - Seamless loops: pass the same still as `start_image` and `end_image`,
   then crossfade a canvas capture of frame 0 over the final 0.5s
-  (`SEAM_FADE` in `index.html`) as insurance.
+  (`SEAM_FADE` in `components/SiteMotion.tsx`) as insurance.
 - Text never sits raw on art: white radial glow behind hero copy, gradient
   veils at section seams, ~42% ink scrim on dark artwork.
 - Dusk/dark scenes may use the brand's night palette (indigo, firefly gold)
@@ -414,6 +414,9 @@ pump outside Toledo).
 - The card modal's scale-FLIP close animation should be re-verified across
   browsers.
 - The print sheet exists only in US Letter.
+- Stack note: the site is a Next.js App Router app. `app/globals.css` holds
+  the tokens as CSS custom properties — it and the YAML front matter here
+  must be changed together.
 
 ## References
 
