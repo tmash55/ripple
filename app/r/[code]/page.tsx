@@ -5,20 +5,19 @@ import { notFound } from "next/navigation";
 import PassItOn from "@/components/PassItOn";
 import RecordForm from "@/components/RecordForm";
 import RippleMark from "@/components/RippleMark";
-import { GENESIS_BATCH, findCard } from "@/lib/genesis";
-import { rippleUrl } from "@/lib/site";
-import { getStore, hashSession, type Moment } from "@/lib/store";
+import { GENESIS_BATCH, findCard, isCodeShaped, normalizeCode } from "@/lib/genesis";
+import { SITE_URL } from "@/lib/site";
+import { getStore, hashSession, type Journey } from "@/lib/store";
 import "./scan.css";
 
 type Props = { params: Promise<{ code: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
-  const card = findCard(code);
   return {
-    title: card ? "A Ripple found you" : "Ripple",
+    title: isCodeShaped(code) ? "A Ripple found you" : "Ripple",
     description: "Someone passed a little kindness forward. It found you.",
-    // Card pages are for the people holding the card, not for search results.
+    // These pages are for the people holding the card or the link, not for search results.
     robots: { index: false, follow: false },
   };
 }
@@ -31,29 +30,44 @@ function monthYear(iso: string): string {
   });
 }
 
-export default async function RipplePage({ params }: Props) {
-  const { code } = await params;
-  const card = findCard(code);
-  if (!card) notFound();
+const pad = (n: number) => String(n).padStart(6, "0");
 
+export default async function RipplePage({ params }: Props) {
+  const { code: rawCode } = await params;
+  if (!isCodeShaped(rawCode)) notFound();
+  const code = normalizeCode(rawCode);
+
+  // Printed cards are known to the site itself, so their page renders even
+  // if the database is unreachable. Passed-on links exist only in the database.
+  const card = findCard(code);
   const store = getStore();
-  let moments: Moment[] = [];
+
+  let journey: Journey | null = null;
   if (store) {
     const h = await headers();
     const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
     // Awaited (not fire-and-forget) so the scan is counted before the
     // serverless function is frozen. logEvent never throws.
     const [found] = await Promise.all([
-      // The card's message and its starting point still render without the journey.
-      store.listApprovedMoments(card.code).catch(() => [] as Moment[]),
+      store.getJourney(code).catch(() => null),
       store.logEvent({
-        code: card.code,
+        code,
         type: "scan",
         sessionHash: hashSession(ip, h.get("user-agent")),
       }),
     ]);
-    moments = found;
+    journey = found;
   }
+  if (!card && !journey) notFound();
+
+  const isLink = journey?.kind === "link";
+  const message = card?.message ?? journey!.message;
+  const place = journey?.place ?? GENESIS_BATCH.place;
+  const released = journey?.releasedOn ? monthYear(journey.releasedOn) : GENESIS_BATCH.released;
+  const batchName = journey?.batchName ?? GENESIS_BATCH.name;
+  const rootNumber =
+    card?.number ?? (journey?.rootNumber != null ? pad(journey.rootNumber) : null);
+  const moments = journey?.moments ?? [];
 
   return (
     <main className="rp-page">
@@ -65,33 +79,32 @@ export default async function RipplePage({ params }: Props) {
 
         <div className="rp-hero">
           <p className="rp-eyebrow">This found you for a reason</p>
-          <h1 className="rp-message">{card.message}</h1>
+          <h1 className="rp-message">{message}</h1>
           <p className="rp-lede">
-            Someone left this card where you would find it, hoping it would
-            make your day a little lighter. It’s yours. Nothing is
-            expected of you.
+            {isLink
+              ? "Someone sent this to you, hoping it would make your day a little lighter. It’s yours. Nothing is expected of you."
+              : "Someone left this card where you would find it, hoping it would make your day a little lighter. It’s yours. Nothing is expected of you."}
           </p>
         </div>
 
         <div className="rp-block">
           <h2 className="rp-h2">What is this?</h2>
           <p className="rp-about">
-            Ripple is a way of making kindness visible. Each card carries one
-            kind message and travels from person to person. This page belongs
-            to your card, and it keeps the story of everywhere the card has
-            been.
+            {isLink
+              ? `Ripple is a way of making kindness visible. This one began as a card left for a stranger in ${place}, and it has been passed from person to person since. This page keeps the story of where it has been.`
+              : "Ripple is a way of making kindness visible. Each card carries one kind message and travels from person to person. This page belongs to your card, and it keeps the story of everywhere the card has been."}
           </p>
         </div>
 
         <div className="rp-block">
-          <h2 className="rp-h2">This card’s journey</h2>
+          <h2 className="rp-h2">{isLink ? "How it reached you" : "This card’s journey"}</h2>
           <ol className="rp-journey">
             <li className="rp-stop">
               <p className="rp-stop-where">
-                Released in {GENESIS_BATCH.place} · {GENESIS_BATCH.released}
+                Released in {place} · {released}
               </p>
               <p className="rp-stop-meta">
-                Ripple #{card.number} · one of the first fifty
+                {rootNumber ? `Ripple #${rootNumber} · one of the first fifty` : "One of the first fifty"}
               </p>
             </li>
             {moments.map((m) => (
@@ -114,26 +127,31 @@ export default async function RipplePage({ params }: Props) {
         <div className="rp-block">
           <h2 className="rp-h2">Add your part</h2>
           <p className="rp-sub">
-            Only if you want to. Tell us about a kindness that reached you
-            — today, or any day.
+            Only if you want to. Tell us about a kindness that reached you — today, or any day.
           </p>
-          <RecordForm code={card.code} storeReady={store !== null} />
+          <RecordForm code={code} storeReady={store !== null} />
         </div>
 
         <div className="rp-block">
           <h2 className="rp-h2">Whenever you’re ready</h2>
           <p className="rp-sub">
-            If one day you want to pass this along: do something kind for
-            someone, then leave the card where they’ll find it. Or send
-            them this page.
+            {isLink
+              ? "If one day you want to pass this along: do something kind for someone, then send them a link of their own."
+              : "If one day you want to pass this along: do something kind for someone, then leave the card where they’ll find it. Or send them a link of their own."}
           </p>
-          <PassItOn code={card.code} url={rippleUrl(card.code)} />
+          <PassItOn
+            code={code}
+            baseUrl={SITE_URL}
+            fallbackHint={isLink ? "It makes a link that is yours to give." : "Or simply hand this card to someone else."}
+          />
         </div>
 
         <p className="rp-foot">
           No account. No name. No location unless you type one.
           <br />
-          Ripple #{card.number} · {GENESIS_BATCH.name}
+          {isLink
+            ? `Began as Ripple #${rootNumber ?? "—"} · ${batchName}`
+            : `Ripple #${rootNumber ?? "—"} · ${batchName}`}
         </p>
       </div>
     </main>

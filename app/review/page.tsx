@@ -52,10 +52,10 @@ function when(iso: string): string {
   });
 }
 
+const cardNo = (n: number | null) => (n == null ? "an unknown card" : `Card #${String(n).padStart(6, "0")}`);
+
 function cardLabel(m: ReviewMoment): string {
-  return m.ripple_number == null
-    ? m.ripple_code
-    : `Card #${String(m.ripple_number).padStart(6, "0")}`;
+  return m.ripple_kind === "link" ? `Link from ${cardNo(m.root_number)}` : cardNo(m.ripple_number);
 }
 
 function Shell({ children, signedIn }: { children: React.ReactNode; signedIn?: boolean }) {
@@ -86,7 +86,7 @@ function Stats({ stats }: { stats: ReviewStats }) {
   const items: Array<[string, number, string]> = [
     ["Scans", stats.scans, `${stats.cards_scanned} of ${stats.cards} cards`],
     ["Stories shared with us", stats.pending + stats.approved + stats.hidden, `${stats.approved} approved`],
-    ["Passed on", stats.shares, "share button used"],
+    ["Passed on", stats.links, `${stats.link_opens} link ${stats.link_opens === 1 ? "open" : "opens"}`],
     ["Longest chain", stats.longest_chain, stats.longest_chain === 1 ? "generation" : "generations"],
     ["Places reached", stats.places, "typed by people"],
   ];

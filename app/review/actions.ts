@@ -19,6 +19,13 @@ export type SignInState = { error: string | null };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+const COOKIE_BASE = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  path: "/review",
+} as const;
+
 export async function signIn(_prev: SignInState, formData: FormData): Promise<SignInState> {
   if (reviewSetup() !== "ready") {
     return { error: "Review isn’t set up yet." };
@@ -31,19 +38,16 @@ export async function signIn(_prev: SignInState, formData: FormData): Promise<Si
   }
 
   const jar = await cookies();
-  jar.set(REVIEW_COOKIE, createSession(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/review",
-    maxAge: REVIEW_SESSION_SECONDS,
-  });
+  jar.set(REVIEW_COOKIE, createSession(), { ...COOKIE_BASE, maxAge: REVIEW_SESSION_SECONDS });
   redirect("/review");
 }
 
 export async function signOut(): Promise<void> {
   const jar = await cookies();
-  jar.set(REVIEW_COOKIE, "", { path: "/review", maxAge: 0 });
+  // Must carry the same attributes as the cookie it replaces: a browser will
+  // not let a cookie without `Secure` overwrite one that has it, which would
+  // leave the person signed in while the page says otherwise.
+  jar.set(REVIEW_COOKIE, "", { ...COOKIE_BASE, maxAge: 0 });
   redirect("/review");
 }
 

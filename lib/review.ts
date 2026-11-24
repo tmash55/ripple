@@ -18,7 +18,10 @@ export const REVIEW_STATUSES: readonly ReviewStatus[] = ["pending", "approved", 
 export type ReviewMoment = {
   id: string;
   ripple_code: string;
+  ripple_kind: "card" | "link";
   ripple_number: number | null;
+  /** The printed card this story's ripple traces back to. */
+  root_number: number | null;
   ripple_message: string;
   generation: number;
   text: string;
@@ -30,7 +33,12 @@ export type ReviewMoment = {
 
 export type ReviewStats = {
   cards: number;
+  /** Personal links made with "Pass it on". */
+  links: number;
+  /** Scans of printed cards. */
   scans: number;
+  /** Opens of passed-on links. */
+  link_opens: number;
   scan_sessions: number;
   cards_scanned: number;
   shares: number;

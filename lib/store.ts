@@ -6,9 +6,9 @@
 // getStore() returns null and the UI says "we're still setting up" instead
 // of pretending to save.
 //
-// Schema: supabase/migrations/. The public (anon) role can read cards and
-// approved moments, log events, and record a moment only through the
-// record_moment() function, which always saves it as pending.
+// Schema: supabase/migrations/. The public (anon) role can read ripples and
+// approved moments, log events, and otherwise only call three functions:
+// ripple_journey(), add_moment() (always saves as pending) and pass_it_on().
 import { createHash } from "node:crypto";
 
 export type Moment = {
@@ -17,6 +17,24 @@ export type Moment = {
   place: string | null;
   generation: number;
   createdAt: string;
+  /** false = an earlier stop inherited from the ripple this one branched from. */
+  here: boolean;
+};
+
+/** Everything a ripple's page needs. `kind` is a printed card or a passed-on link. */
+export type Journey = {
+  code: string;
+  kind: "card" | "link";
+  message: string;
+  /** Card number within its batch; null for links. */
+  number: number | null;
+  /** Number of the printed card this ripple traces back to. */
+  rootNumber: number | null;
+  batchName: string | null;
+  place: string | null;
+  releasedOn: string | null;
+  /** Approved stories only, oldest generation first. */
+  moments: Moment[];
 };
 
 export type NewMoment = {
@@ -33,10 +51,15 @@ export type FunnelEvent = {
 };
 
 export interface RippleStore {
-  /** Approved moments for a card, oldest first. */
-  listApprovedMoments(code: string): Promise<Moment[]>;
-  /** Saves a moment as `pending`; it is not public until someone approves it. */
-  recordMoment(input: NewMoment): Promise<void>;
+  /** The ripple and its approved stories, or null if the code doesn't exist. */
+  getJourney(code: string): Promise<Journey | null>;
+  /** Saves a story as `pending` and returns its id; it is not public until approved. */
+  recordMoment(input: NewMoment): Promise<string | null>;
+  /**
+   * Makes a personal link that branches from `code`. `momentId` is the story
+   * this device recorded there, if any. Returns the new link's code.
+   */
+  passItOn(code: string, momentId: string | null): Promise<string>;
   /** Best-effort; must never throw into the page. */
   logEvent(event: FunnelEvent): Promise<void>;
 }
@@ -72,50 +95,78 @@ class SupabaseStore implements RippleStore {
     };
   }
 
-  async listApprovedMoments(code: string): Promise<Moment[]> {
-    // RLS only exposes approved rows to the anon role; the status filter is
-    // belt-and-braces.
-    const qs = new URLSearchParams({
-      select: "id,text,place,generation,created_at",
-      ripple_code: `eq.${code}`,
-      status: "eq.approved",
-      order: "created_at.asc,id.asc",
-    });
-    const res = await fetch(`${this.url}/rest/v1/moments?${qs}`, {
-      headers: this.headers(),
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(`moments read failed: ${res.status}`);
-    const rows = (await res.json()) as Array<{
-      id: string;
-      text: string;
-      place: string | null;
-      generation: number;
-      created_at: string;
-    }>;
-    return rows.map((r) => ({
-      id: r.id,
-      text: r.text,
-      place: r.place,
-      generation: r.generation,
-      createdAt: r.created_at,
-    }));
-  }
-
-  async recordMoment(input: NewMoment): Promise<void> {
-    // The record_moment() function resolves the ripple, sets the parent and
-    // generation, and forces status = 'pending' server-side.
-    const res = await fetch(`${this.url}/rest/v1/rpc/record_moment`, {
+  private async rpc<T>(fn: string, body: Record<string, unknown>): Promise<T> {
+    const res = await fetch(`${this.url}/rest/v1/rpc/${fn}`, {
       method: "POST",
       headers: this.headers(),
-      body: JSON.stringify({
-        p_code: input.code,
-        p_text: input.text,
-        p_place: input.place,
-      }),
+      body: JSON.stringify(body),
       cache: "no-store",
     });
-    if (!res.ok) throw new Error(`moment write failed: ${res.status}`);
+    if (!res.ok) throw new Error(`${fn} failed: ${res.status}`);
+    const text = await res.text();
+    return (text ? JSON.parse(text) : null) as T;
+  }
+
+  async getJourney(code: string): Promise<Journey | null> {
+    // One call returns the ripple, the card it traces back to, and its
+    // approved stories (including earlier stops inherited by a link).
+    const j = await this.rpc<{
+      code: string;
+      kind: "card" | "link";
+      message: string;
+      number: number | null;
+      root_number: number | null;
+      batch_name: string | null;
+      place: string | null;
+      released_on: string | null;
+      moments: Array<{
+        id: string;
+        text: string;
+        place: string | null;
+        generation: number;
+        created_at: string;
+        here: boolean;
+      }>;
+    } | null>("ripple_journey", { p_code: code });
+    if (!j) return null;
+    return {
+      code: j.code,
+      kind: j.kind,
+      message: j.message,
+      number: j.number,
+      rootNumber: j.root_number,
+      batchName: j.batch_name,
+      place: j.place,
+      releasedOn: j.released_on,
+      moments: j.moments.map((m) => ({
+        id: m.id,
+        text: m.text,
+        place: m.place,
+        generation: m.generation,
+        createdAt: m.created_at,
+        here: m.here,
+      })),
+    };
+  }
+
+  async recordMoment(input: NewMoment): Promise<string | null> {
+    // add_moment() resolves the ripple, sets the parent and generation (a
+    // chain on cards, siblings on links), and forces status = 'pending'.
+    const id = await this.rpc<string | null>("add_moment", {
+      p_code: input.code,
+      p_text: input.text,
+      p_place: input.place,
+    });
+    return typeof id === "string" ? id : null;
+  }
+
+  async passItOn(code: string, momentId: string | null): Promise<string> {
+    const linkCode = await this.rpc<string>("pass_it_on", {
+      p_code: code,
+      p_moment_id: momentId,
+    });
+    if (typeof linkCode !== "string") throw new Error("pass_it_on returned no code");
+    return linkCode;
   }
 
   async logEvent(event: FunnelEvent): Promise<void> {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { recordMoment, type RecordState } from "@/app/r/[code]/actions";
 
 const INITIAL: RecordState = { status: "idle" };
@@ -13,6 +13,19 @@ export default function RecordForm({
   storeReady: boolean;
 }) {
   const [state, action, pending] = useActionState(recordMoment, INITIAL);
+
+  // Remember, on this device only, which story was written here. "Pass it
+  // on" uses it so the link it makes continues from this story.
+  const savedId = state.status === "saved" ? state.momentId : null;
+  useEffect(() => {
+    if (!savedId) return;
+    try {
+      window.localStorage.setItem(`ripple:moment:${code}`, savedId);
+    } catch {
+      // Private browsing or storage disabled: the link still works, it just
+      // continues from the ripple rather than from this exact story.
+    }
+  }, [savedId, code]);
 
   // Shown up front when storage isn't connected, so nobody writes a story
   // that has nowhere to go.
