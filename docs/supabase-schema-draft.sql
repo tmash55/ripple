@@ -102,11 +102,23 @@ begin
     raise exception 'unknown ripple code';
   end if;
 
+  -- Abuse brakes. A real card changes hands a few times a day at most, so
+  -- these never touch honest use; they only bound what a script can do
+  -- before a person looks at the review queue.
+  if (select count(*) from public.moments
+      where ripple_id = v_ripple.id and created_at > now() - interval '1 hour') >= 10 then
+    raise exception 'this ripple has had a lot of entries in the last hour — try again later';
+  end if;
+  if (select count(*) from public.moments
+      where created_at > now() - interval '1 hour') >= 300 then
+    raise exception 'ripple is receiving a lot of entries right now — try again later';
+  end if;
+
   -- Parent = the latest stop on this ripple that hasn't been hidden…
   select * into v_parent
   from public.moments
   where ripple_id = v_ripple.id and status <> 'hidden'
-  order by created_at desc, id desc
+  order by generation desc, created_at desc, id desc
   limit 1;
 
   if found then
@@ -137,6 +149,14 @@ $$;
 
 revoke all on function public.record_moment(text, text, text) from public;
 grant execute on function public.record_moment(text, text, text) to anon;
+
+-- ── table privileges ─────────────────────────────────────────────────────
+-- Spelled out rather than relying on a project's default grants: the public
+-- (anon) role gets exactly these and nothing else. Signed-in users don't
+-- exist in Ripple, so `authenticated` gets nothing.
+revoke all on public.batches, public.ripples, public.moments, public.events from anon, authenticated;
+grant select on public.batches, public.ripples, public.moments to anon;
+grant insert on public.events to anon;
 
 -- ── row level security ───────────────────────────────────────────────────
 alter table public.batches enable row level security;
@@ -170,9 +190,10 @@ values ('genesis', 'GENESIS', 'GENESIS — Ankeny, Iowa — November/December 20
 -- and the printed cards can't drift apart.
 
 -- ── open questions before applying ───────────────────────────────────────
--- 1. Abuse: nothing here rate-limits record_moment(). Add a per-session
---    daily cap (events.session_hash) or put Vercel BotID / a firewall rule
---    in front of the form before the cards are in the wild at scale.
+-- 1. Abuse: record_moment() caps entries at 10 per ripple per hour and 300
+--    overall per hour, and everything lands as 'pending'. The events table
+--    has no cap. Add Vercel BotID / a firewall rule in front of the form
+--    before the cards are in the wild at scale.
 -- 2. A pending moment counts as a parent. If it is later hidden, its
 --    children keep their generation number. Decide whether moderation
 --    should re-parent, or whether generation should only ever be computed

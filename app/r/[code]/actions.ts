@@ -56,3 +56,17 @@ export async function recordMoment(
     return { status: "error" };
   }
 }
+
+/** Counts a completed "Pass it on" (share sheet sent, or link copied). Best-effort. */
+export async function logShare(code: string): Promise<void> {
+  const card = findCard(String(code ?? ""));
+  const store = getStore();
+  if (!card || !store) return;
+  const h = await headers();
+  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  await store.logEvent({
+    code: card.code,
+    type: "share",
+    sessionHash: hashSession(ip, h.get("user-agent")),
+  });
+}

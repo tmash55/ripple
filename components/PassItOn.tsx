@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { logShare } from "@/app/r/[code]/actions";
 
-export default function PassItOn({ url }: { url: string }) {
+export default function PassItOn({ url, code }: { url: string; code: string }) {
   const [copied, setCopied] = useState(false);
 
   async function onClick() {
@@ -14,6 +15,7 @@ export default function PassItOn({ url }: { url: string }) {
     if (typeof navigator.share === "function") {
       try {
         await navigator.share(data);
+        void logShare(code);
         return;
       } catch (err) {
         // Closing the share sheet is not an error worth a fallback.
@@ -22,6 +24,7 @@ export default function PassItOn({ url }: { url: string }) {
     }
     try {
       await navigator.clipboard.writeText(url);
+      void logShare(code);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2400);
     } catch {

@@ -39,18 +39,20 @@ export default async function RipplePage({ params }: Props) {
   const store = getStore();
   let moments: Moment[] = [];
   if (store) {
-    try {
-      moments = await store.listApprovedMoments(card.code);
-    } catch {
-      // The card's message and its starting point still render without the journey.
-    }
     const h = await headers();
     const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
-    void store.logEvent({
-      code: card.code,
-      type: "scan",
-      sessionHash: hashSession(ip, h.get("user-agent")),
-    });
+    // Awaited (not fire-and-forget) so the scan is counted before the
+    // serverless function is frozen. logEvent never throws.
+    const [found] = await Promise.all([
+      // The card's message and its starting point still render without the journey.
+      store.listApprovedMoments(card.code).catch(() => [] as Moment[]),
+      store.logEvent({
+        code: card.code,
+        type: "scan",
+        sessionHash: hashSession(ip, h.get("user-agent")),
+      }),
+    ]);
+    moments = found;
   }
 
   return (
@@ -125,7 +127,7 @@ export default async function RipplePage({ params }: Props) {
             someone, then leave the card where they’ll find it. Or send
             them this page.
           </p>
-          <PassItOn url={rippleUrl(card.code)} />
+          <PassItOn code={card.code} url={rippleUrl(card.code)} />
         </div>
 
         <p className="rp-foot">
