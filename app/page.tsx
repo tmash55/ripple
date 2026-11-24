@@ -13,6 +13,7 @@ export default function Home() {
           <ul className="nav-links">
             <li><a href="#how">How it works</a></li>
             <li><a href="#use-cases">Ideas</a></li>
+            <li><a href="#states">States</a></li>
             <li><a href="#journal">Stories</a></li>
           </ul>
           <a className="btn btn-primary btn-sm" href="/reached">Reached me</a>
@@ -86,10 +87,17 @@ export default function Home() {
       {/* 02d · WHERE TO LEAVE IT */}
       <section id="leave">
         <div className="container-wide">
-          <div style={{maxWidth: '640px'}}>
-            <p className="eyebrow" data-reveal>Keep it moving</p>
-            <h2 className="heading-2" data-reveal style={{marginTop: '12px'}}>Leave it where someone will find it.</h2>
-            <p className="lede" data-reveal style={{marginTop: '16px', maxWidth: '40ch'}}>Once you’ve read yours, the card is meant to keep going. Anywhere a stranger might pause will do.</p>
+          <div className="print-grid">
+            <div>
+              <p className="eyebrow" data-reveal>Keep it moving</p>
+              <h2 className="heading-2" data-reveal style={{marginTop: '12px'}}>Leave it where someone will find it.</h2>
+              <p className="lede" data-reveal style={{marginTop: '16px', maxWidth: '34ch'}}>Once you’ve read yours, the card is meant to keep going. Anywhere a stranger might pause will do.</p>
+            </div>
+            <div className="print-fan" data-reveal aria-hidden="true">
+              <div className="mini-card"><img src="/assets/state-iowa.jpg" alt="" /><span className="mini-label"><span className="plaque-micro">This ripple started in</span><span className="plaque-state">Iowa</span></span></div>
+              <div className="mini-card"><img src="/assets/state-colorado.jpg" alt="" /><span className="mini-label"><span className="plaque-micro">It could reach</span><span className="plaque-state">Colorado</span></span></div>
+              <div className="mini-card"><img src="/assets/state-maine.jpg" alt="" /><span className="mini-label"><span className="plaque-micro">It could reach</span><span className="plaque-state">Maine</span></span></div>
+            </div>
           </div>
           <div className="spot-row">
             <div className="spot" data-reveal><b>In a library book</b><span>Page 100 of a favorite. The next reader earns it.</span></div>
@@ -152,6 +160,70 @@ export default function Home() {
         </div>
       </section>
       
+      {/* 04b · STATES — a gallery of where a ripple could travel. Nothing here claims a card exists in a state. */}
+      <section id="states">
+        <div className="container-wide">
+          <div style={{textAlign: 'center', maxWidth: '640px', margin: '0 auto var(--gap-3xl)'}}>
+            <p className="eyebrow" data-reveal>Where it could go</p>
+            <h2 className="heading-2" data-reveal style={{marginTop: '12px'}}>Fifty cards. Fifty states to reach.</h2>
+            <p className="lede" data-reveal style={{marginTop: '16px'}}>Every one of the first cards began in Iowa. Nobody knows how far one will travel.</p>
+          </div>
+          <div className="states-grid">
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-alabama.jpg" alt="Alabama" /></span><span className="state-name">Alabama</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-alaska.jpg" alt="Alaska" /></span><span className="state-name">Alaska</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-arizona.jpg" alt="Arizona" /></span><span className="state-name">Arizona</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-arkansas.jpg" alt="Arkansas" /></span><span className="state-name">Arkansas</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-california.jpg" alt="California" /></span><span className="state-name">California</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-colorado.jpg" alt="Colorado" /></span><span className="state-name">Colorado</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-connecticut.jpg" alt="Connecticut" /></span><span className="state-name">Connecticut</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-delaware.jpg" alt="Delaware" /></span><span className="state-name">Delaware</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-florida.jpg" alt="Florida" /></span><span className="state-name">Florida</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-georgia.jpg" alt="Georgia" /></span><span className="state-name">Georgia</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-hawaii.jpg" alt="Hawaii" /></span><span className="state-name">Hawaii</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-idaho.jpg" alt="Idaho" /></span><span className="state-name">Idaho</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-illinois.jpg" alt="Illinois" /></span><span className="state-name">Illinois</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-indiana.jpg" alt="Indiana" /></span><span className="state-name">Indiana</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-iowa.jpg" alt="Iowa" /></span><span className="state-name">Iowa</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-kansas.jpg" alt="Kansas" /></span><span className="state-name">Kansas</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-kentucky.jpg" alt="Kentucky" /></span><span className="state-name">Kentucky</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-louisiana.jpg" alt="Louisiana" /></span><span className="state-name">Louisiana</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-maine.jpg" alt="Maine" /></span><span className="state-name">Maine</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-maryland.jpg" alt="Maryland" /></span><span className="state-name">Maryland</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-massachusetts.jpg" alt="Massachusetts" /></span><span className="state-name">Massachusetts</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-michigan.jpg" alt="Michigan" /></span><span className="state-name">Michigan</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-minnesota.jpg" alt="Minnesota" /></span><span className="state-name">Minnesota</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-mississippi.jpg" alt="Mississippi" /></span><span className="state-name">Mississippi</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-missouri.jpg" alt="Missouri" /></span><span className="state-name">Missouri</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-montana.jpg" alt="Montana" /></span><span className="state-name">Montana</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-nebraska.jpg" alt="Nebraska" /></span><span className="state-name">Nebraska</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-nevada.jpg" alt="Nevada" /></span><span className="state-name">Nevada</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-newhampshire.jpg" alt="New Hampshire" /></span><span className="state-name">New Hampshire</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-newjersey.jpg" alt="New Jersey" /></span><span className="state-name">New Jersey</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-newmexico.jpg" alt="New Mexico" /></span><span className="state-name">New Mexico</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-newyork.jpg" alt="New York" /></span><span className="state-name">New York</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-northcarolina.jpg" alt="North Carolina" /></span><span className="state-name">North Carolina</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-northdakota.jpg" alt="North Dakota" /></span><span className="state-name">North Dakota</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-ohio.jpg" alt="Ohio" /></span><span className="state-name">Ohio</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-oklahoma.jpg" alt="Oklahoma" /></span><span className="state-name">Oklahoma</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-oregon.jpg" alt="Oregon" /></span><span className="state-name">Oregon</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-pennsylvania.jpg" alt="Pennsylvania" /></span><span className="state-name">Pennsylvania</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-rhodeisland.jpg" alt="Rhode Island" /></span><span className="state-name">Rhode Island</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-southcarolina.jpg" alt="South Carolina" /></span><span className="state-name">South Carolina</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-southdakota.jpg" alt="South Dakota" /></span><span className="state-name">South Dakota</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-tennessee.jpg" alt="Tennessee" /></span><span className="state-name">Tennessee</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-texas.jpg" alt="Texas" /></span><span className="state-name">Texas</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-utah.jpg" alt="Utah" /></span><span className="state-name">Utah</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-vermont.jpg" alt="Vermont" /></span><span className="state-name">Vermont</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-virginia.jpg" alt="Virginia" /></span><span className="state-name">Virginia</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-washington.jpg" alt="Washington" /></span><span className="state-name">Washington</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-westvirginia.jpg" alt="West Virginia" /></span><span className="state-name">West Virginia</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-wisconsin.jpg" alt="Wisconsin" /></span><span className="state-name">Wisconsin</span></a>
+            <a className="state-card" data-reveal href="#"><span className="state-art"><img loading="lazy" src="/assets/state-wyoming.jpg" alt="Wyoming" /></span><span className="state-name">Wyoming</span></a>
+          </div>
+          <p className="small" data-reveal style={{textAlign: 'center', marginTop: 'var(--gap-xl)', color: 'var(--text-tertiary)'}}>Tap a state to turn its card over.</p>
+        </div>
+      </section>
+      
       {/* 05 · STORIES — empty until real ones are recorded. Keep id="journal": SiteMotion scrolls against it. */}
       <section id="journal">
         <div className="container" style={{textAlign: 'center'}}>
@@ -191,6 +263,31 @@ export default function Home() {
         </div>
       </footer>
       
+      {/* STATE CARD MODAL */}
+      <div className="card-modal-root" id="card-modal" hidden>
+        <div className="card-scrim"></div>
+        <div className="card-fly">
+          <div className="flip-inner">
+            <div className="card-face card-front">
+              <span className="card-art"><img alt="" /></span>
+              <div className="card-plaque">
+                <span className="plaque-micro">A ripple could reach</span>
+                <span className="plaque-state">Iowa</span>
+              </div>
+            </div>
+            <div className="card-face card-back">
+              <svg className="back-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 14.8C13 12.2 10.6 10.4 10.6 8.2C10.6 6.5 12 5.2 13.6 5.2C14.6 5.2 15.5 5.7 16 6.5C16.5 5.7 17.4 5.2 18.4 5.2C20 5.2 21.4 6.5 21.4 8.2C21.4 10.4 19 12.2 16 14.8Z" fill="#c2704a"/><ellipse cx="16" cy="20.5" rx="6.5" ry="2.4" fill="none" stroke="#5d7050" strokeWidth="1.8"/><ellipse cx="16" cy="21.8" rx="11.5" ry="4.2" fill="none" stroke="#5d7050" strokeWidth="1.4" opacity="0.5"/></svg>
+              <h5>Keep the ripple moving</h5>
+              <p className="back-msg">If this brought a smile to your face, help someone else experience the same.</p>
+              <span className="back-tag">#KeepTheRippleMoving</span>
+            </div>
+          </div>
+          <button className="modal-close-x" aria-label="Close">✕</button>
+          <div className="modal-btns">
+            <button className="btn btn-light flip-btn">Flip the card</button>
+          </div>
+        </div>
+      </div>
       <SiteMotion />
     </>
   );

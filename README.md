@@ -43,7 +43,7 @@ Originally built as a single static `index.html` (see git history) on a design l
 - `app/reached/` — "Things that reached me": a private list kept in the visitor's own browser (`lib/device.ts`, localStorage). The only thing asked of the server is counts of what came after their story or link (`reach()` in `supabase/migrations/20261124220000_reach.sql`).
 - `app/contact/`, `app/privacy/`, `app/terms/` — plain pages sharing `components/DocPage.tsx`. Contact messages (removal requests, problems) are stored privately and read on the review page's Messages tab; Ripple publishes no email address. The privacy and terms wording is a plain-language draft, not reviewed by a lawyer.
 - Link previews: `app/opengraph-image.tsx` (site) and `app/r/[code]/opengraph-image.tsx` (each card or link shows its own sentence). Icons: `app/icon.svg`, `app/favicon.ico`, `app/apple-icon.tsx`.
-- The homepage describes only what exists. The fifty-state grid, its card modal and the print-at-home sheet were removed on 2026-11-24 because they promised cards that do not exist yet; they are in git history before that date if editions return.
+- The homepage describes only what exists. The print-at-home sheet is gone (it made cards with no code). The fifty-state gallery and the card fan are kept as artwork, worded as where a ripple could travel; nothing claims a card exists in a state.
 - `app/review/` — the story review queue (password-protected, not indexed). Stories stay hidden from the public until someone approves them here. Also shows scans, stories, shares, longest chain and places reached.
 
 Before printing, set the real domain (see `.env.example`): `NEXT_PUBLIC_SITE_URL=https://your-domain`.

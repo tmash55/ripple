@@ -220,6 +220,9 @@ export default function SiteMotion() {
           var name = card.querySelector('.state-name').textContent;
           frontImg.src = img.src; frontImg.alt = name;
           plaque.textContent = name;
+          /* Every first card began in Iowa; the other states are places one could reach. */
+          var micro = root.querySelector('.card-plaque .plaque-micro');
+          if (micro) micro.textContent = name === 'Iowa' ? 'The first ripples started in' : 'A ripple could reach';
           var h = hashNum(name);
           var r = card.getBoundingClientRect(), t = targetRect();
           curT = t;
