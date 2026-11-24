@@ -202,9 +202,6 @@ export default function SiteMotion() {
           frontImg.src = img.src; frontImg.alt = name;
           plaque.textContent = name;
           var h = hashNum(name);
-          root.querySelector('[data-stat="found"]').textContent = (120 + h % 680).toLocaleString();
-          root.querySelector('[data-stat="first"]').textContent = MONTHS[h % 12] + ' ' + (2024 + h % 3);
-          root.querySelector('[data-stat="traveled"]').textContent = (3 + h % 42) + ' states';
           var r = card.getBoundingClientRect(), t = targetRect();
           curT = t;
           root.hidden = false;

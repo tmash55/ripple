@@ -54,8 +54,8 @@ export default function Home() {
         </div>
         <div className="container stat-stack">
           <p className="stat-eyebrow">One small act, then another</p>
-          <h2 className="stat-line">12,400 cards found</h2>
-          <h2 className="stat-line">50 states reached</h2>
+          <h2 className="stat-line">The first fifty cards</h2>
+          <h2 className="stat-line">start in Ankeny, Iowa</h2>
           <h2 className="stat-line">one ripple at a time</h2>
           <span className="stat-dash"><i></i></span>
         </div>
@@ -233,33 +233,11 @@ export default function Home() {
         </div>
       </section>
       
-      {/* 04c · FINDER QUOTE */}
-      <section id="quote">
-        <div className="container">
-          <blockquote data-reveal>“I found mine taped to a gas pump outside Toledo. It rode in my glovebox for a week — then I tucked it into a cookbook in a Denver thrift store.”</blockquote>
-          <cite data-reveal>— the eleventh keeper of card #4,201, somewhere between Ohio and Colorado</cite>
-        </div>
-      </section>
-      
-      {/* 05 · JOURNAL SLIDER */}
+      {/* 05 · STORIES — empty until real ones are recorded. Keep id="journal": SiteMotion scrolls against it. */}
       <section id="journal">
-        <div className="container-wide">
-          <div className="carousel-head">
-            <h2 className="heading-2" data-reveal>Ripple stories</h2>
-            <div className="carousel-nav" data-reveal>
-              <button className="circle-btn" data-track="posts" data-dir="-1" aria-label="Previous">←</button>
-              <button className="circle-btn" data-track="posts" data-dir="1" aria-label="Next">→</button>
-            </div>
-          </div>
-          <div className="track" id="posts">
-            {/* repeat ×6 */}
-            <article className="blog-card" data-reveal><div className="blog-cover"></div><div className="blog-body"><p className="meta">Jul 2026 · Iowa</p><h6>The ripple that started in a diner</h6><a className="arrow-link" href="#">Read <span className="arr">→</span></a></div></article>
-            <article className="blog-card" data-reveal><div className="blog-cover"></div><div className="blog-body"><p className="meta">Jun 2026 · Vermont</p><h6>The library book with 41 notes</h6><a className="arrow-link" href="#">Read <span className="arr">→</span></a></div></article>
-            <article className="blog-card" data-reveal><div className="blog-cover"></div><div className="blog-body"><p className="meta">Jun 2026 · Texas</p><h6>Bluebonnets on a stranger’s porch</h6><a className="arrow-link" href="#">Read <span className="arr">→</span></a></div></article>
-            <article className="blog-card" data-reveal><div className="blog-cover"></div><div className="blog-body"><p className="meta">May 2026 · Alaska</p><h6>Kindness rocks above the timberline</h6><a className="arrow-link" href="#">Read <span className="arr">→</span></a></div></article>
-            <article className="blog-card" data-reveal><div className="blog-cover"></div><div className="blog-body"><p className="meta">May 2026 · Ohio</p><h6>Coffee for the whole night shift</h6><a className="arrow-link" href="#">Read <span className="arr">→</span></a></div></article>
-            <article className="blog-card" data-reveal><div className="blog-cover"></div><div className="blog-body"><p className="meta">Apr 2026 · Maine</p><h6>A lighthouse keeper finds card 9,000</h6><a className="arrow-link" href="#">Read <span className="arr">→</span></a></div></article>
-          </div>
+        <div className="container" style={{textAlign: 'center'}}>
+          <h2 className="heading-2" data-reveal>Ripple stories</h2>
+          <p className="lede" data-reveal style={{marginTop: 'var(--gap-l)', maxWidth: '44ch', marginLeft: 'auto', marginRight: 'auto'}}>The first cards are only just going out. Real stories will appear here as the people who find them write them down.</p>
         </div>
       </section>
       
@@ -311,11 +289,6 @@ export default function Home() {
               <svg className="back-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 14.8C13 12.2 10.6 10.4 10.6 8.2C10.6 6.5 12 5.2 13.6 5.2C14.6 5.2 15.5 5.7 16 6.5C16.5 5.7 17.4 5.2 18.4 5.2C20 5.2 21.4 6.5 21.4 8.2C21.4 10.4 19 12.2 16 14.8Z" fill="#c2704a"/><ellipse cx="16" cy="20.5" rx="6.5" ry="2.4" fill="none" stroke="#5d7050" strokeWidth="1.8"/><ellipse cx="16" cy="21.8" rx="11.5" ry="4.2" fill="none" stroke="#5d7050" strokeWidth="1.4" opacity="0.5"/></svg>
               <h5>Keep the ripple moving</h5>
               <p className="back-msg">If this brought a smile to your face, help someone else experience the same.</p>
-              <div className="back-stats">
-                <div><span>Cards found here</span><span data-stat="found">—</span></div>
-                <div><span>First ripple</span><span data-stat="first">—</span></div>
-                <div><span>Traveled to</span><span data-stat="traveled">—</span></div>
-              </div>
               <span className="back-tag">#KeepTheRippleMoving</span>
             </div>
           </div>

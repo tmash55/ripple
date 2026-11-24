@@ -32,3 +32,14 @@ npm run build    # static production build
 ## History
 
 Originally built as a single static `index.html` (see git history) on a design language extracted from mobbin.com; ported to Next.js App Router with byte-identical CSS and markup. Artwork generated with Higgsfield (Nano Banana Pro stills, Seedance loops using matched start/end frames for seamless looping).
+
+## Genesis batch (first 50 cards)
+
+- `data/genesis-codes.json` — the 50 permanent card codes. Never edit or regenerate; they are printed.
+- `data/genesis-messages.ts` — one message per card. **Draft** until the client signs off.
+- `/print/genesis` — print sheets, 4 cards per US Letter page, each with its own QR code.
+- `/r/{code}` — the page a QR code opens.
+- `docs/supabase-schema-draft.sql` — draft data model (not applied anywhere).
+
+Before printing, set the real domain (see `.env.example`): `NEXT_PUBLIC_SITE_URL=https://your-domain`.
+Until then every sheet is stamped "placeholder domain — do not print".

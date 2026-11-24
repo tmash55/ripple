@@ -1,0 +1,76 @@
+/* Genesis print sheet — 4 cards per US Letter page, cut along the dashed lines.
+   Derived from public/print.html; card tokens match DESIGN.md's printed card. */
+.gp-root{background:#ededed;min-height:100vh;padding-bottom:24px;color:#141414}
+.gp-toolbar{
+  position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:24px;
+  background:#fff;border-bottom:1px solid #40404014;padding:14px 24px;
+}
+.gp-toolbar p{font-size:14px;line-height:20px;font-weight:300;color:#717171}
+.gp-toolbar strong{font-weight:456;color:#141414}
+.gp-toolbar .gp-warn{color:#ce2b04;font-weight:456}
+.gp-btn{
+  flex:none;background:#141414;color:#fff;border:none;border-radius:999px;padding:12px 20px;
+  font-family:inherit;font-weight:456;font-size:14px;cursor:pointer;
+}
+.gp-sheet{
+  position:relative;
+  width:8.5in;height:11in;margin:24px auto 0;background:#fff;padding:.5in;overflow:hidden;
+  display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:4.9in;gap:.2in;
+  box-shadow:0 8px 40px #0000001a;
+}
+.gp-stamp{
+  position:absolute;top:.12in;left:0;right:0;text-align:center;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:652;color:#ce2b04;
+}
+.gp-sheet-no{
+  position:absolute;bottom:.16in;left:0;right:0;text-align:center;
+  font-size:8px;letter-spacing:.14em;text-transform:uppercase;font-weight:456;color:#adadad;
+}
+.gp-card{
+  border:1.5px dashed #adadad;border-radius:14px;padding:.22in .26in .17in;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  background:#fff;overflow:hidden;
+}
+.gp-brand{display:flex;align-items:center;gap:6px}
+.gp-brand svg{width:.3in;height:.3in;flex:none}
+.gp-brand span{font-size:13px;letter-spacing:.2em;font-weight:652;color:#5d7050}
+.gp-reason{
+  margin-top:.1in;
+  font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:456;color:#c2704a;
+}
+.gp-message{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:.06in 0;
+  font-size:20px;line-height:26px;letter-spacing:-.15px;font-weight:652;color:#141414;
+  text-wrap:balance;
+}
+.gp-forward{
+  font-size:10px;line-height:14.5px;font-weight:300;color:#141414;max-width:2.9in;
+  text-wrap:pretty;
+}
+.gp-rule{width:.35in;border-top:1px solid #4040401f;margin:.08in 0 .06in}
+.gp-scan{display:flex;align-items:center;gap:.14in;width:100%}
+/* 1.5in including the quiet zone → the code itself prints ≥1.1in wide. */
+.gp-qr{width:1.5in;height:1.5in;flex:none;display:block}
+.gp-scan-copy{flex:1;text-align:left}
+.gp-scan-copy .gp-pass{font-size:11.5px;line-height:15.5px;font-weight:456;color:#141414;text-wrap:balance}
+.gp-scan-copy .gp-nopress{margin-top:5px;font-size:9.5px;line-height:13px;font-weight:300;color:#717171}
+.gp-url{
+  margin-top:.05in;
+  font-size:10.5px;line-height:14px;letter-spacing:.03em;font-weight:456;color:#141414;
+  overflow-wrap:anywhere;
+}
+.gp-url b{font-weight:652;letter-spacing:.08em}
+.gp-foot{
+  margin-top:.05in;
+  font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:456;color:#5d7050;
+}
+@media print{
+  @page{size:letter;margin:0}
+  html,body{background:#fff!important}
+  .gp-root{background:#fff;min-height:0;padding:0}
+  .gp-toolbar{display:none}
+  .gp-sheet{margin:0;box-shadow:none;break-after:page;page-break-after:always}
+  .gp-sheet:last-child{break-after:auto;page-break-after:auto}
+  .gp-card,.gp-qr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
