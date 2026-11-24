@@ -63,7 +63,7 @@ function Shell({ children, signedIn }: { children: React.ReactNode; signedIn?: b
     <main className="rv-page">
       <div className="rv-col">
         <header className="rv-top">
-          <Link className="rv-brand" href="/">
+          <Link className="rv-brand" href="/" prefetch={false}>
             <RippleMark />
             Ripple
             <span className="rv-brand-sub">Review</span>

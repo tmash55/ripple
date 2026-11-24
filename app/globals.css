@@ -91,8 +91,11 @@ h1,h2,h3,h4{font-optical-sizing:auto}
 .eyebrow{font-weight:var(--w-ui);font-size:var(--fs-small);line-height:var(--lh-small);letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary)}
 
 /* ============ layout ============ */
-.container{max-width:var(--container);margin:0 auto;padding:0 var(--page-margin)}
-.container-wide{max-width:var(--container-wide);margin:0 auto;padding:0 var(--page-margin)}
+/* width:100% matters: sections are flex columns, so without it a container
+   shrink-wraps its content. The carousel's cards then stretch it to 1280px
+   on a phone, and the fixed nav centres itself off-screen. */
+.container{width:100%;max-width:var(--container);margin:0 auto;padding:0 var(--page-margin)}
+.container-wide{width:100%;max-width:var(--container-wide);margin:0 auto;padding:0 var(--page-margin)}
 section,header.hero,.dark-band{
   min-height:100vh;
   display:flex;flex-direction:column;justify-content:center;
@@ -118,7 +121,7 @@ nav.pill{
   color:var(--ink);text-decoration:none;font-weight:var(--w-ui);font-size:var(--fs-small);
   transition:var(--transition-ui);
 }
-.nav-links a:hover{background:var(--hairline-6)}
+@media (hover:hover){.nav-links a:hover{background:var(--hairline-6)}}
 
 /* ============ buttons ============ */
 .btn{
@@ -129,12 +132,12 @@ nav.pill{
   transition:var(--transition-ui);
 }
 .btn-primary{background:var(--ink);color:#fff}
-.btn-primary:hover{background:var(--ink-hover)}
+@media (hover:hover){.btn-primary:hover{background:var(--ink-hover)}}
 .btn-secondary{background:transparent;color:var(--ink);border:1px solid var(--border-btn)}
-.btn-secondary:hover{background:var(--hairline-6)}
+@media (hover:hover){.btn-secondary:hover{background:var(--hairline-6)}}
 .btn-sm{padding:10px 16px;font-size:var(--fs-small)}
 .btn-light{background:#fff;color:var(--ink)}
-.btn-light:hover{background:#ededed}
+@media (hover:hover){.btn-light:hover{background:#ededed}}
 
 /* ============ hero ============ */
 header.hero{align-items:center;text-align:center;position:relative;overflow:hidden}
@@ -154,6 +157,10 @@ header.hero{align-items:center;text-align:center;position:relative;overflow:hidd
 }
 /* tall/narrow viewports: show the full composition, bottom-anchored,
    and let the sky blend into the veil instead of cropping the sides */
+/* phones get a 1280px still (≈ a quarter of the bytes of the full one) */
+@media (max-width:809px){
+  .hero-bg{background-image:url('/assets/hero-bg-valley-1280.jpg')}
+}
 @media (max-aspect-ratio: 3/2){
   .hero-bg{background-size:100% auto;background-position:center bottom}
   .hero-video,.hero-seam{inset:auto 0 0 0;height:auto;object-fit:fill}
@@ -178,7 +185,7 @@ header.hero .btn-secondary{
   background:rgba(255,255,255,.6);border-color:rgba(255,255,255,.9);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
 }
-header.hero .btn-secondary:hover{background:rgba(255,255,255,.85)}
+@media (hover:hover){header.hero .btn-secondary:hover{background:rgba(255,255,255,.85)}}
 .play-intro{color:#3f3f3f;text-shadow:0 1px 12px rgba(255,255,255,.9)}
 .play-intro .play-glyph{border-color:rgba(20,20,20,.3);background:rgba(255,255,255,.5)}
 .orb{
@@ -197,7 +204,7 @@ header.hero .btn-secondary:hover{background:rgba(255,255,255,.85)}
   color:var(--text-secondary);text-decoration:none;font-size:var(--fs-small);letter-spacing:.2px;
   transition:var(--transition-ui);
 }
-.play-intro:hover{color:var(--ink)}
+@media (hover:hover){.play-intro:hover{color:var(--ink)}}
 .play-glyph{
   width:36px;height:36px;border-radius:50%;border:1px solid var(--hairline-12);
   display:inline-flex;align-items:center;justify-content:center;font-size:10px;
@@ -210,7 +217,7 @@ header.hero .btn-secondary:hover{background:rgba(255,255,255,.85)}
   width:48px;height:48px;border-radius:50%;border:1px solid var(--border-btn);background:transparent;
   cursor:pointer;font-size:16px;color:var(--ink);transition:var(--transition-ui);
 }
-.circle-btn:hover{background:var(--hairline-6)}
+@media (hover:hover){.circle-btn:hover{background:var(--hairline-6)}}
 .track{
   display:flex;gap:var(--gap-l);overflow-x:auto;scroll-snap-type:x mandatory;
   padding:4px 4px 24px;scrollbar-width:none;
@@ -223,7 +230,7 @@ header.hero .btn-secondary:hover{background:rgba(255,255,255,.85)}
 }
 .case-cover{aspect-ratio:16/10;background:#ededed;overflow:hidden}
 .case-cover video{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.02);transition:transform .5s ease}
-.case-card:hover .case-cover video{transform:scale(1.07)}
+@media (hover:hover){.case-card:hover .case-cover video{transform:scale(1.07)}}
 .case-body{padding:var(--gap-l);display:flex;flex-direction:column;gap:var(--gap-s);flex:1}
 .badge{
   align-self:flex-start;padding:4px 10px;border-radius:var(--r-pill);
@@ -235,9 +242,9 @@ header.hero .btn-secondary:hover{background:rgba(255,255,255,.85)}
   margin-top:auto;color:var(--ink);text-decoration:none;font-weight:var(--w-ui);font-size:var(--fs-small);
   display:inline-flex;align-items:center;gap:6px;transition:var(--transition-ui);
 }
-.arrow-link:hover{color:var(--accent)}
+@media (hover:hover){.arrow-link:hover{color:var(--accent)}}
 .arrow-link .arr{transition:transform .2s ease}
-.arrow-link:hover .arr{transform:translateX(3px)}
+@media (hover:hover){.arrow-link:hover .arr{transform:translateX(3px)}}
 
 /* ============ two-column showpiece ============ */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap-m)}
@@ -291,7 +298,7 @@ footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hai
 .foot-grid h5{font-weight:var(--w-ui);font-size:var(--fs-small);color:var(--text-tertiary);margin-bottom:var(--gap-m);text-transform:uppercase;letter-spacing:.08em}
 .foot-grid ul{list-style:none;display:flex;flex-direction:column;gap:10px}
 .foot-grid a{color:var(--ink);text-decoration:none;font-size:var(--fs-small);transition:var(--transition-ui)}
-.foot-grid a:hover{color:var(--text-secondary)}
+@media (hover:hover){.foot-grid a:hover{color:var(--text-secondary)}}
 .giant-wordmark{
   font-weight:var(--w-display);font-size:clamp(80px,16vw,220px);line-height:.85;letter-spacing:-.02em;
   color:var(--ink);user-select:none;
@@ -304,7 +311,7 @@ footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hai
 .library{position:relative;overflow:hidden;min-height:100vh}
 .library .stat-stack{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--gap-l);position:relative;z-index:1}
 .stat-eyebrow{font-weight:var(--w-display);font-size:var(--fs-h4);line-height:var(--lh-h4)}
-.stat-line{font-weight:var(--w-display);font-size:clamp(40px,6vw,92px);line-height:1.02;letter-spacing:var(--ls-hero);white-space:nowrap}
+.stat-line{font-weight:var(--w-display);font-size:clamp(24px,min(8.6vw,max(40px,6vw)),92px);line-height:1.02;letter-spacing:var(--ls-hero);white-space:nowrap}
 .stat-dash{width:44px;height:4px;border-radius:var(--r-pill);background:var(--hairline-12);margin-top:var(--gap-xl);overflow:hidden}
 .stat-dash i{display:block;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:left}
 .tiles{position:absolute;inset:0;z-index:0;pointer-events:none}
@@ -336,7 +343,7 @@ footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hai
   overflow:hidden;background:var(--surface);text-decoration:none;color:var(--ink);
   transition:transform .3s ease;
 }
-.state-card:hover{transform:translateY(-4px)}
+@media (hover:hover){.state-card:hover{transform:translateY(-4px)}}
 .state-art{aspect-ratio:1;display:block;overflow:hidden}
 .state-art img{width:100%;height:100%;object-fit:cover;display:block}
 .state-name{padding:10px 12px;font-weight:var(--w-ui);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-align:center}
@@ -358,9 +365,9 @@ footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hai
 .mini-card:nth-child(1){transform:translate(-50%,-50%) translateX(-120px) rotate(-8deg)}
 .mini-card:nth-child(2){transform:translate(-50%,-50%) translateY(-10px);z-index:1}
 .mini-card:nth-child(3){transform:translate(-50%,-50%) translateX(120px) rotate(8deg)}
-.print-fan:hover .mini-card:nth-child(1){transform:translate(-50%,-50%) translateX(-150px) rotate(-11deg)}
-.print-fan:hover .mini-card:nth-child(2){transform:translate(-50%,-50%) translateY(-26px)}
-.print-fan:hover .mini-card:nth-child(3){transform:translate(-50%,-50%) translateX(150px) rotate(11deg)}
+@media (hover:hover){.print-fan:hover .mini-card:nth-child(1){transform:translate(-50%,-50%) translateX(-150px) rotate(-11deg)}}
+@media (hover:hover){.print-fan:hover .mini-card:nth-child(2){transform:translate(-50%,-50%) translateY(-26px)}}
+@media (hover:hover){.print-fan:hover .mini-card:nth-child(3){transform:translate(-50%,-50%) translateX(150px) rotate(11deg)}}
 .print-note{margin-top:var(--gap-m);font-size:var(--fs-small);color:var(--text-tertiary)}
 .spot-row{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--gap-m);margin-top:var(--gap-4xl)}
 .spot{border-top:1px solid var(--hairline-10);padding-top:14px}
@@ -421,7 +428,7 @@ footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hai
   background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;
   font-size:18px;cursor:pointer;transition:var(--transition-ui);
 }
-.modal-close-x:hover{background:rgba(255,255,255,.3)}
+@media (hover:hover){.modal-close-x:hover{background:rgba(255,255,255,.3)}}
 
 /* ============ reveal initial states (GSAP animates in) ============ */
 [data-reveal]{opacity:0;transform:translateY(40px)}
@@ -441,4 +448,18 @@ footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hai
   .two-col{grid-template-columns:1fr}
   .foot-grid{grid-template-columns:1fr 1fr}
   .case-card{flex-basis:300px}
+  /* the fixed nav pill is 76px tall with its offset; keep the hero clear of it */
+  header.hero{padding-top:112px}
+  /* three cards across leaves ~95px for a name: size the label to the screen
+     so MASSACHUSETTS fits, and wrap rather than clip if it ever doesn't */
+  .state-name{font-size:clamp(9px,2.6vw,12px);letter-spacing:.02em;padding:10px 4px;overflow-wrap:anywhere}
+  /* thumb-sized targets */
+  .foot-grid ul{gap:0}
+  .foot-grid a{display:inline-flex;align-items:center;min-height:44px}
+  nav.pill .btn-sm,.play-intro,.arrow-link{min-height:44px}
+}
+@media (max-width:359px){
+  .states-grid{grid-template-columns:repeat(2,1fr)}
+  /* the fanned cards span 360px; shrink the fan so it can't widen the page */
+  .print-fan{transform:scale(.86)}
 }

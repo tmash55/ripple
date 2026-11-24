@@ -52,6 +52,9 @@ export default function ReachedList({ baseUrl }: { baseUrl: string }) {
   // null until the device's list has been read; it can't be known on the server.
   const [items, setItems] = useState<ReachedItem[] | null>(null);
   const [reach, setReach] = useState<Record<string, Reach>>({});
+  // While counts are on their way, each entry holds a line open for them so
+  // the buttons underneath don't jump when they arrive on a slow connection.
+  const [reachPending, setReachPending] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,12 +65,16 @@ export default function ReachedList({ baseUrl }: { baseUrl: string }) {
       .map((i) => ({ code: i.code, momentId: i.story?.id ?? null, linkCode: i.link?.code ?? null }));
     if (ask.length === 0) return;
     let cancelled = false;
+    setReachPending(true);
     getReach(ask)
       .then((r) => {
         if (!cancelled) setReach(r);
       })
       .catch(() => {
         // The list still shows; only the "after you" lines are missing.
+      })
+      .finally(() => {
+        if (!cancelled) setReachPending(false);
       });
     return () => {
       cancelled = true;
@@ -141,7 +148,11 @@ export default function ReachedList({ baseUrl }: { baseUrl: string }) {
                 </div>
               ) : null}
 
-              {after ? <p className="rc-after">{after}</p> : null}
+              {reachPending && (item.story || item.link) ? (
+                <p className="rc-after rc-after-wait">Looking for what came after…</p>
+              ) : after ? (
+                <p className="rc-after">{after}</p>
+              ) : null}
 
               <div className="rc-actions">
                 {/* No prefetch: loading a ripple page counts as a scan. */}

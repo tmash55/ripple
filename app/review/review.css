@@ -8,11 +8,12 @@
 .rv-col{width:100%;max-width:640px}
 
 .rv-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:32px}
-.rv-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:var(--w-display);font-size:18px}
+.rv-brand{display:inline-flex;align-items:center;gap:8px;min-height:44px;text-decoration:none;color:var(--ink);font-weight:var(--w-display);font-size:18px}
 .rv-brand svg{width:28px;height:28px}
 .rv-brand-sub{font-weight:var(--w-body);color:var(--text-secondary)}
 .rv-link{
-  background:none;border:none;padding:8px 0;cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;min-height:44px;
+  background:none;border:none;padding:0 0 0 12px;cursor:pointer;font-family:inherit;
   font-size:var(--fs-small);font-weight:var(--w-ui);color:var(--text-secondary);
   text-decoration:underline;text-underline-offset:3px;
 }
@@ -50,7 +51,7 @@
 /* tabs */
 .rv-tabs{margin-top:32px;display:flex;gap:8px;flex-wrap:wrap}
 .rv-tab{
-  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--r-pill);
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:9px 14px;border-radius:var(--r-pill);
   border:1px solid var(--border-btn);text-decoration:none;color:var(--ink);
   font-size:var(--fs-small);font-weight:var(--w-ui);transition:var(--transition-ui);
 }
@@ -66,9 +67,11 @@
 .rv-story{padding:22px 0;border-bottom:1px solid var(--hairline-10)}
 .rv-story:last-child{border-bottom:none}
 .rv-meta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;line-height:18px;color:var(--text-secondary)}
-.rv-meta a{color:var(--ink);font-weight:var(--w-ui);text-underline-offset:3px}
+.rv-meta{align-items:center}
+.rv-meta a{color:var(--ink);font-weight:var(--w-ui);text-underline-offset:3px;display:inline-flex;align-items:center;min-height:44px;margin:-13px 0}
 .rv-text{margin-top:10px;font-size:18px;line-height:26px;letter-spacing:0;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
 .rv-place{margin-top:8px;font-size:var(--fs-small);line-height:20px;font-weight:var(--w-ui);color:#5d7050}
 .rv-card-msg{margin-top:6px;font-size:13px;line-height:19px;color:var(--text-secondary);text-wrap:pretty}
 .rv-actions{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.rv-actions .btn{min-height:44px}
 .rv-actions .btn:disabled{opacity:.55;cursor:default}

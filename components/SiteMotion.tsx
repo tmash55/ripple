@@ -13,11 +13,30 @@ import Lenis from "lenis";
 export default function SiteMotion() {
   useEffect(() => {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduced) {
-        document.documentElement.classList.add('reduced-motion');
+      /* The hero loop is ~9 MB. Skip it for anyone who has asked for less data
+         or is on a 2G/3G-class connection (where the browser tells us), and
+         show the still instead. `?lite=1` forces this for testing. */
+      var conn = (navigator as any).connection || {};
+      var lite = conn.saveData === true
+        || /(^|-)[23]g$/.test(conn.effectiveType || '')
+        || /[?&]lite=1(&|$)/.test(window.location.search);
+      if (reduced) document.documentElement.classList.add('reduced-motion');
+      if (reduced || lite) {
         var hv = document.querySelector('.hero-video');
-        if (hv) hv.remove(); /* fall back to the static poster image */
+        if (hv) hv.remove(); /* fall back to the static still behind it */
       }
+
+      /* Card-cover posters sit far down the page; fetch each one only as its
+         card approaches the viewport. */
+      (function(){
+        var covers = Array.prototype.slice.call(document.querySelectorAll('video[data-poster]'));
+        function show(v){ v.setAttribute('poster', v.getAttribute('data-poster')); v.removeAttribute('data-poster'); }
+        if (!('IntersectionObserver' in window)) { covers.forEach(show); return; }
+        var io = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){ if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } });
+        }, { rootMargin: '600px 600px' });
+        covers.forEach(function(v){ io.observe(v); });
+      })();
     
       /* ---- typed-letter headline (word-wrap safe: types word by word into spans) ---- */
       function typeInto(id, done){
@@ -265,6 +284,7 @@ export default function SiteMotion() {
     /* React SSR omits the muted attribute, which blocks autoplay — restore it */
     var heroV = document.querySelector(".hero-video");
     if (heroV) {
+      heroV.preload = "auto";
       heroV.muted = true;
       var p = heroV.play();
       if (p) p.catch(function () {});

@@ -5,8 +5,8 @@
   padding:28px 22px 56px;
   display:flex;flex-direction:column;align-items:center;
 }
-.rp-col{width:100%;max-width:520px}
-.rp-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:var(--w-display);font-size:18px}
+.rp-col{width:100%;max-width:520px;min-width:0}
+.rp-brand{display:inline-flex;align-items:center;gap:8px;min-height:44px;text-decoration:none;color:var(--ink);font-weight:var(--w-display);font-size:18px}
 .rp-brand svg{width:28px;height:28px}
 
 .rp-hero{margin-top:36px}
@@ -40,6 +40,9 @@
 .rp-stop-where{font-weight:var(--w-ui);font-size:15px;line-height:22px;color:var(--ink);letter-spacing:-.01em}
 .rp-stop-meta{font-size:13px;line-height:18px;color:var(--text-tertiary)}
 .rp-stop-text{margin-top:6px;font-size:16px;line-height:24px;color:var(--ink);text-wrap:pretty}
+/* People paste links and type without spaces. Nothing a visitor writes may
+   widen the page. */
+.rp-stop-text,.rp-stop-where,.rp-message{overflow-wrap:anywhere}
 .rp-stop-open::before{border-style:dashed;border-color:var(--text-tertiary)}
 .rp-stop-open .rp-stop-where{color:var(--text-secondary);font-weight:var(--w-body)}
 
@@ -96,5 +99,7 @@
 .rp-pass-row .rp-pass-btn{margin-top:0;width:auto;flex:1 1 140px}
 
 /* the quiet link to "Things that reached me" */
-.rp-mine{margin-top:36px;text-align:center;font-size:var(--fs-small);line-height:20px}
+.rp-mine{margin-top:24px;text-align:center;font-size:var(--fs-small);line-height:20px}
+/* A full-size touch target around a small text link. */
+.rp-mine a{display:inline-block;padding:12px 16px}
 .rp-mine a,.rp-note a{color:var(--ink);font-weight:var(--w-ui);text-underline-offset:3px}

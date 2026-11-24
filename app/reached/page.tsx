@@ -18,7 +18,7 @@ export default function ReachedPage() {
   return (
     <main className="rp-page">
       <div className="rp-col">
-        <Link className="rp-brand" href="/">
+        <Link className="rp-brand" href="/" prefetch={false}>
           <RippleMark />
           Ripple
         </Link>

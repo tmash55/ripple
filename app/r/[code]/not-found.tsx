@@ -6,7 +6,7 @@ export default function RippleNotFound() {
   return (
     <main className="rp-page">
       <div className="rp-col">
-        <Link className="rp-brand" href="/">
+        <Link className="rp-brand" href="/" prefetch={false}>
           <RippleMark />
           Ripple
         </Link>
@@ -19,7 +19,7 @@ export default function RippleNotFound() {
             your camera is the surest way here.
           </p>
           <p className="rp-btn-row">
-            <Link className="btn btn-primary" href="/">
+            <Link className="btn btn-primary" href="/" prefetch={false}>
               See what Ripple is
             </Link>
           </p>

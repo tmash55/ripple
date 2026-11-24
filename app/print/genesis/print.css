@@ -74,3 +74,17 @@
   .gp-sheet:last-child{break-after:auto;page-break-after:auto}
   .gp-card,.gp-qr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+/* On-screen preview on phones and small tablets. Print output is untouched:
+   everything here is screen-only, and `zoom` shrinks the Letter-size sheets
+   to fit the screen instead of forcing the page 8.5 inches wide. */
+@media screen and (max-width:860px){
+  .gp-toolbar{flex-direction:column;align-items:stretch;gap:12px;padding:14px 16px}
+  .gp-btn{width:100%;min-height:44px}
+  .gp-sheet{zoom:.88;margin-top:14px}
+}
+@media screen and (max-width:740px){.gp-sheet{zoom:.7}}
+@media screen and (max-width:600px){.gp-sheet{zoom:.52}}
+@media screen and (max-width:440px){.gp-sheet{zoom:.47}}
+@media screen and (max-width:400px){.gp-sheet{zoom:.43}}
+@media screen and (max-width:360px){.gp-sheet{zoom:.36}}
