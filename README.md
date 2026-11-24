@@ -18,7 +18,6 @@ npm run build    # static production build
 - `app/globals.css` — the entire design system as CSS (tokens in `:root`)
 - `app/layout.tsx` — Inter Variable via `next/font` (the weight axis matters: 652/456/300)
 - `components/SiteMotion.tsx` — the motion layer (GSAP ScrollTrigger + Lenis), one client-side effect that animates the server-rendered DOM
-- `public/print.html` — printable sheet of four cut-out Ripple cards (plain HTML on purpose)
 - `public/assets/` — generated watercolor artwork: hero valley (still + ambient loop), 50 state cards, card cinemagraphs, dusk CTA backdrop
 - `DESIGN.md` — **read this before touching any UI.** The design language as a spec (getdesign.md `alpha` format): tokens, rationale, motion rules, artwork prompt contract.
 
@@ -42,6 +41,9 @@ Originally built as a single static `index.html` (see git history) on a design l
 - `supabase/migrations/` — the data model and the 50-card seed, as applied to the Ripple Supabase project on 2026-11-24.
 - **Lineage:** a printed card is a `card` ripple whose stories form a chain as it changes hands. "Pass it on" makes a `link` ripple of the person's own; stories recorded on a link are the next generation after the story it branched from. See `supabase/migrations/20261124210000_pass_it_on_branching.sql`.
 - `app/reached/` — "Things that reached me": a private list kept in the visitor's own browser (`lib/device.ts`, localStorage). The only thing asked of the server is counts of what came after their story or link (`reach()` in `supabase/migrations/20261124220000_reach.sql`).
+- `app/contact/`, `app/privacy/`, `app/terms/` — plain pages sharing `components/DocPage.tsx`. Contact messages (removal requests, problems) are stored privately and read on the review page's Messages tab; Ripple publishes no email address. The privacy and terms wording is a plain-language draft, not reviewed by a lawyer.
+- Link previews: `app/opengraph-image.tsx` (site) and `app/r/[code]/opengraph-image.tsx` (each card or link shows its own sentence). Icons: `app/icon.svg`, `app/favicon.ico`, `app/apple-icon.tsx`.
+- The homepage describes only what exists. The fifty-state grid, its card modal and the print-at-home sheet were removed on 2026-11-24 because they promised cards that do not exist yet; they are in git history before that date if editions return.
 - `app/review/` — the story review queue (password-protected, not indexed). Stories stay hidden from the public until someone approves them here. Also shows scans, stories, shares, longest chain and places reached.
 
 Before printing, set the real domain (see `.env.example`): `NEXT_PUBLIC_SITE_URL=https://your-domain`.

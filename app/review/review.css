@@ -75,3 +75,4 @@
 .rv-actions{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
 .rv-actions .btn{min-height:44px}
 .rv-actions .btn:disabled{opacity:.55;cursor:default}
+.rv-topic{color:var(--ink);font-weight:var(--w-ui)}

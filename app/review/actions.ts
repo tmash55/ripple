@@ -11,6 +11,7 @@ import {
   passwordMatches,
   reviewSetup,
   sessionIsValid,
+  setMessageStatus,
   setMomentStatus,
   type ReviewStatus,
 } from "@/lib/review";
@@ -61,5 +62,18 @@ export async function setStatus(formData: FormData): Promise<void> {
   if (!UUID.test(id) || !REVIEW_STATUSES.includes(status)) return;
 
   await setMomentStatus(id, status);
+  revalidatePath("/review");
+}
+
+/** Mark a contact message handled, or put it back. Re-checks the session every time. */
+export async function setMessageDone(formData: FormData): Promise<void> {
+  const jar = await cookies();
+  if (!sessionIsValid(jar.get(REVIEW_COOKIE)?.value)) redirect("/review");
+
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!UUID.test(id) || (status !== "new" && status !== "done")) return;
+
+  await setMessageStatus(id, status);
   revalidatePath("/review");
 }

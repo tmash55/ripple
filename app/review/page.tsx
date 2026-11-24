@@ -3,16 +3,20 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import RippleMark from "@/components/RippleMark";
 import ReviewSignIn from "@/components/ReviewSignIn";
+import MessageAction from "@/components/MessageAction";
 import ReviewAction from "@/components/ReviewAction";
 import { signOut } from "./actions";
 import {
   MIN_PASSWORD_LENGTH,
   REVIEW_COOKIE,
   REVIEW_STATUSES,
+  countNewMessages,
   getStats,
+  listMessages,
   listMoments,
   reviewSetup,
   sessionIsValid,
+  type ReviewMessage,
   type ReviewMoment,
   type ReviewStats,
   type ReviewStatus,
@@ -132,6 +136,35 @@ function Story({ moment }: { moment: ReviewMoment }) {
   );
 }
 
+const TOPIC_LABEL: Record<ReviewMessage["topic"], string> = {
+  remove: "Wants something removed",
+  problem: "Reports a problem",
+  other: "Something else",
+};
+
+function Message({ message }: { message: ReviewMessage }) {
+  return (
+    <li className="rv-story">
+      <p className="rv-meta">
+        <span className="rv-topic">{TOPIC_LABEL[message.topic]}</span>
+        <span>{when(message.created_at)}</span>
+        {message.ripple_code ? (
+          <Link href={`/r/${message.ripple_code}`} prefetch={false}>
+            About {message.ripple_code}
+          </Link>
+        ) : null}
+      </p>
+      <p className="rv-text">{message.text}</p>
+      <p className="rv-place">
+        {message.reply_to ? `Reply to: ${message.reply_to}` : "No way to reply was given"}
+      </p>
+      <div className="rv-actions">
+        <MessageAction id={message.id} />
+      </div>
+    </li>
+  );
+}
+
 export default async function ReviewPage({ searchParams }: Props) {
   const jar = await cookies();
   const setup = reviewSetup();
@@ -163,15 +196,23 @@ export default async function ReviewPage({ searchParams }: Props) {
   }
 
   const { tab } = await searchParams;
+  const onMessages = tab === "messages";
   const status: ReviewStatus = REVIEW_STATUSES.includes(tab as ReviewStatus)
     ? (tab as ReviewStatus)
     : "pending";
 
   let stats: ReviewStats | null = null;
   let moments: ReviewMoment[] = [];
+  let messages: ReviewMessage[] = [];
+  let newMessages = 0;
   let failed = false;
   try {
-    [stats, moments] = await Promise.all([getStats(), listMoments(status)]);
+    [stats, moments, messages, newMessages] = await Promise.all([
+      getStats(),
+      onMessages ? Promise.resolve([] as ReviewMoment[]) : listMoments(status),
+      onMessages ? listMessages("new") : Promise.resolve([] as ReviewMessage[]),
+      countNewMessages(),
+    ]);
   } catch {
     failed = true;
   }
@@ -187,21 +228,39 @@ export default async function ReviewPage({ searchParams }: Props) {
         <>
           <Stats stats={stats} />
 
-          <nav className="rv-tabs" aria-label="Stories by status">
+          <nav className="rv-tabs" aria-label="Stories and messages">
             {REVIEW_STATUSES.map((s) => (
               <Link
                 key={s}
                 href={s === "pending" ? "/review" : `/review?tab=${s}`}
-                className={s === status ? "rv-tab rv-tab-on" : "rv-tab"}
-                aria-current={s === status ? "page" : undefined}
+                className={!onMessages && s === status ? "rv-tab rv-tab-on" : "rv-tab"}
+                aria-current={!onMessages && s === status ? "page" : undefined}
               >
                 {TAB_LABEL[s]}
                 <span>{stats[s]}</span>
               </Link>
             ))}
+            <Link
+              href="/review?tab=messages"
+              className={onMessages ? "rv-tab rv-tab-on" : "rv-tab"}
+              aria-current={onMessages ? "page" : undefined}
+            >
+              Messages
+              <span>{newMessages}</span>
+            </Link>
           </nav>
 
-          {moments.length === 0 ? (
+          {onMessages ? (
+            messages.length === 0 ? (
+              <p className="rv-empty">No messages are waiting.</p>
+            ) : (
+              <ul className="rv-list">
+                {messages.map((m) => (
+                  <Message key={m.id} message={m} />
+                ))}
+              </ul>
+            )
+          ) : moments.length === 0 ? (
             <p className="rv-empty">{EMPTY[status]}</p>
           ) : (
             <ul className="rv-list">

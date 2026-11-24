@@ -457,6 +457,8 @@ footer{padding:var(--section-pad) 0 var(--gap-xl);border-top:1px solid var(--hai
   .foot-grid ul{gap:0}
   .foot-grid a{display:inline-flex;align-items:center;min-height:44px}
   nav.pill .btn-sm,.play-intro,.arrow-link{min-height:44px}
+  .brand{min-height:44px}
+  .foot-legal .links a{display:inline-flex;align-items:center;min-height:44px}
 }
 @media (max-width:359px){
   .states-grid{grid-template-columns:repeat(2,1fr)}

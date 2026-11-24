@@ -1,0 +1,15 @@
+/* Plain-text pages (contact, privacy, terms). Builds on scan.css. */
+.dc-col{max-width:600px}
+.dc-body{margin-top:8px}
+.dc-body h2{margin-top:36px;font-weight:var(--w-display);font-size:20px;line-height:26px;letter-spacing:0;color:var(--ink);text-wrap:balance}
+.dc-body p,.dc-body li{font-size:16px;line-height:25px;letter-spacing:0;color:var(--ink);text-wrap:pretty}
+.dc-body p{margin-top:12px}
+.dc-body ul{margin-top:10px;padding-left:20px}
+.dc-body li{margin-top:6px}
+.dc-body a{color:var(--ink);font-weight:var(--w-ui);text-underline-offset:3px}
+.dc-lede{font-size:17px;line-height:26px;color:var(--text-secondary)}
+.dc-updated{margin-top:36px;font-size:13px;line-height:18px;color:var(--text-secondary)}
+.dc-select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,#717171 50%),linear-gradient(135deg,#717171 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:40px}
+/* footer links as thumb-sized targets */
+.dc-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:0 20px}
+.dc-foot a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-weight:var(--w-ui);text-underline-offset:3px}

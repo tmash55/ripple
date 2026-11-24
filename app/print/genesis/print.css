@@ -1,5 +1,5 @@
 /* Genesis print sheet — 4 cards per US Letter page, cut along the dashed lines.
-   Derived from public/print.html; card tokens match DESIGN.md's printed card. */
+   Card tokens match DESIGN.md's printed card. */
 .gp-root{background:#ededed;min-height:100vh;padding-bottom:24px;color:#141414}
 .gp-toolbar{
   position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:24px;

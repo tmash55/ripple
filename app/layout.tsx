@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 // Inter Variable — the full weight axis is required: the design system runs
@@ -10,10 +11,20 @@ const inter = Inter({
   display: "swap",
 });
 
+const DESCRIPTION =
+  "Fifty kindness cards began in Ankeny, Iowa. Each one carries a kind sentence and passes from hand to hand. If one found you, this is its story.";
+
 export const metadata: Metadata = {
-  title: "Ripple — a little kindness, every state, all connected",
-  description:
-    "Print a card, do something kind, leave it anywhere. Ripple is a kindness-card movement traveling state to state.",
+  metadataBase: new URL(SITE_URL),
+  title: "Ripple — a little kindness, passed from hand to hand",
+  description: DESCRIPTION,
+  openGraph: {
+    siteName: "Ripple",
+    type: "website",
+    title: "Ripple — a little kindness, passed from hand to hand",
+    description: DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({

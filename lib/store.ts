@@ -45,6 +45,15 @@ export type ReachCounts = {
   linkOpens: number | null;
 };
 
+export type ContactMessage = {
+  topic: "remove" | "problem" | "other";
+  text: string;
+  /** However the sender chose to be reached, if at all. */
+  replyTo: string | null;
+  /** The card or link they are writing about, if they gave one. */
+  code: string | null;
+};
+
 export type NewMoment = {
   code: string;
   text: string;
@@ -70,6 +79,8 @@ export interface RippleStore {
   passItOn(code: string, momentId: string | null): Promise<string>;
   /** Counts of what came after a story and/or a passed-on link. Null if neither is known. */
   reach(momentId: string | null, linkCode: string | null): Promise<ReachCounts | null>;
+  /** A note to the people who run Ripple (removal requests, problems). Private. */
+  sendMessage(input: ContactMessage): Promise<void>;
   /** Best-effort; must never throw into the page. */
   logEvent(event: FunnelEvent): Promise<void>;
 }
@@ -195,6 +206,15 @@ class SupabaseStore implements RippleStore {
       placesAfter: r.places_after,
       linkOpens: r.link_opens,
     };
+  }
+
+  async sendMessage(input: ContactMessage): Promise<void> {
+    await this.rpc<null>("send_message", {
+      p_topic: input.topic,
+      p_text: input.text,
+      p_reply_to: input.replyTo,
+      p_code: input.code,
+    });
   }
 
   async logEvent(event: FunnelEvent): Promise<void> {

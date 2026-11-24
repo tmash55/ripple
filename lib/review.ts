@@ -128,3 +128,26 @@ export function getStats(): Promise<ReviewStats> {
 export async function setMomentStatus(id: string, status: ReviewStatus): Promise<void> {
   await rpc<null>("review_set_status", { p_id: id, p_status: status });
 }
+
+export type ReviewMessage = {
+  id: string;
+  topic: "remove" | "problem" | "other";
+  text: string;
+  reply_to: string | null;
+  ripple_code: string | null;
+  status: "new" | "done";
+  created_at: string;
+  handled_at: string | null;
+};
+
+export function listMessages(status: "new" | "done"): Promise<ReviewMessage[]> {
+  return rpc<ReviewMessage[]>("review_messages", { p_status: status });
+}
+
+export function countNewMessages(): Promise<number> {
+  return rpc<number>("review_message_count", {});
+}
+
+export async function setMessageStatus(id: string, status: "new" | "done"): Promise<void> {
+  await rpc<null>("review_message_set", { p_id: id, p_status: status });
+}

@@ -18,6 +18,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: isCodeShaped(code) ? "A Ripple found you" : "Ripple",
     description: "Someone passed a little kindness forward. It found you.",
+    // What shows when this link is texted or posted.
+    openGraph: {
+      title: "A Ripple found you",
+      description: "Someone passed a little kindness forward. Open it to see where it has been.",
+    },
     // These pages are for the people holding the card or the link, not for search results.
     robots: { index: false, follow: false },
   };
