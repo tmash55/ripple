@@ -6,8 +6,13 @@
 // "do not print" warning on every page.
 export const PLACEHOLDER_SITE_URL = "https://YOUR-DOMAIN-HERE.example";
 
+// ripple.cards was registered 2026-11-24 and is what the GENESIS batch was
+// printed with. It is the default so a missing env var can never produce
+// cards or links that point anywhere else.
+export const DEFAULT_SITE_URL = "https://ripple.cards";
+
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL?.trim() || PLACEHOLDER_SITE_URL
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() || DEFAULT_SITE_URL
 ).replace(/\/+$/, "");
 
 export const SITE_URL_IS_PLACEHOLDER = SITE_URL === PLACEHOLDER_SITE_URL;
