@@ -40,6 +40,7 @@ Originally built as a single static `index.html` (see git history) on a design l
 - `/print/genesis` — print sheets, 4 cards per US Letter page, each with its own QR code.
 - `/r/{code}` — the page a QR code opens.
 - `supabase/migrations/` — the data model and the 50-card seed, as applied to the Ripple Supabase project on 2026-11-24.
+- `app/review/` — the story review queue (password-protected, not indexed). Stories stay hidden from the public until someone approves them here. Also shows scans, stories, shares, longest chain and places reached.
 
 Before printing, set the real domain (see `.env.example`): `NEXT_PUBLIC_SITE_URL=https://your-domain`.
 Until then every sheet is stamped "placeholder domain — do not print".
