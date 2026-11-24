@@ -1,4 +1,4 @@
-// Writes docs/supabase-seed-genesis.sql from the two source-of-truth files:
+// Writes supabase/migrations/20261124192900_seed_genesis_ripples.sql from the two source-of-truth files:
 //   data/genesis-codes.json   (permanent codes, printed on the cards)
 //   data/genesis-messages.ts  (card wording, in card order)
 //
@@ -45,5 +45,5 @@ cross join (select id from public.batches where slug = 'genesis') as b
 on conflict (code) do update set message = excluded.message;
 `;
 
-writeFileSync(join(root, "docs/supabase-seed-genesis.sql"), sql);
-console.log(`wrote docs/supabase-seed-genesis.sql (${cards.length} ripples)`);
+writeFileSync(join(root, "supabase/migrations/20261124192900_seed_genesis_ripples.sql"), sql);
+console.log(`wrote supabase/migrations/20261124192900_seed_genesis_ripples.sql (${cards.length} ripples)`);

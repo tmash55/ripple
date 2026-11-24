@@ -1,6 +1,7 @@
 -- ════════════════════════════════════════════════════════════════════════
--- DRAFT — NOT APPLIED ANYWHERE. No Supabase project exists for Ripple yet.
--- Review, then apply to a NEW project (never the Unjuiced database).
+-- APPLIED 2026-11-24 to the Supabase project "Ripple" (ref nxrdzcmhmqitjccjkqus,
+-- us-east-1) as migration `ripple_v1_schema`. Ripple has its own project;
+-- never apply this to any other database.
 -- lib/store.ts is written against exactly this shape.
 -- ════════════════════════════════════════════════════════════════════════
 --
@@ -19,7 +20,7 @@
 -- A card fresh from the printer is generation 0; the first person to record
 -- on it is generation 1.
 
-create extension if not exists pgcrypto;
+-- gen_random_uuid() is built in on Postgres 13+, so no extension is needed.
 
 -- ── batches ──────────────────────────────────────────────────────────────
 create table public.batches (
@@ -147,7 +148,7 @@ begin
 end;
 $$;
 
-revoke all on function public.record_moment(text, text, text) from public;
+revoke all on function public.record_moment(text, text, text) from public, authenticated;
 grant execute on function public.record_moment(text, text, text) to anon;
 
 -- ── table privileges ─────────────────────────────────────────────────────
@@ -183,13 +184,11 @@ create policy "anyone may log an event" on public.events
 insert into public.batches (slug, name, title, place, released_on)
 values ('genesis', 'GENESIS', 'GENESIS — Ankeny, Iowa — November/December 2026', 'Ankeny, Iowa', '2026-11-24');
 
--- The 50 ripples are NOT seeded here on purpose: their codes live in
--- data/genesis-codes.json (permanent) and their messages in
--- data/genesis-messages.ts (draft until the client signs off). Generate the
--- insert from those two files once the wording is final, so the database
--- and the printed cards can't drift apart.
+-- The 50 ripples are seeded by the next migration, which is generated from
+-- data/genesis-codes.json and data/genesis-messages.ts so the database and
+-- the printed cards can't drift apart.
 
--- ── open questions before applying ───────────────────────────────────────
+-- ── open questions ───────────────────────────────────────────────────────
 -- 1. Abuse: record_moment() caps entries at 10 per ripple per hour and 300
 --    overall per hour, and everything lands as 'pending'. The events table
 --    has no cap. Add Vercel BotID / a firewall rule in front of the form

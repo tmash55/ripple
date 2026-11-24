@@ -6,8 +6,9 @@
 // getStore() returns null and the UI says "we're still setting up" instead
 // of pretending to save.
 //
-// NOTE: the Supabase adapter has NOT been run against a live project yet —
-// no project exists. It is written against docs/supabase-schema-draft.sql.
+// Schema: supabase/migrations/. The public (anon) role can read cards and
+// approved moments, log events, and record a moment only through the
+// record_moment() function, which always saves it as pending.
 import { createHash } from "node:crypto";
 
 export type Moment = {

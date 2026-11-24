@@ -39,7 +39,7 @@ Originally built as a single static `index.html` (see git history) on a design l
 - `data/genesis-messages.ts` — one message per card. **Draft** until the client signs off.
 - `/print/genesis` — print sheets, 4 cards per US Letter page, each with its own QR code.
 - `/r/{code}` — the page a QR code opens.
-- `docs/supabase-schema-draft.sql` — draft data model (not applied anywhere).
+- `supabase/migrations/` — the data model and the 50-card seed, as applied to the Ripple Supabase project on 2026-11-24.
 
 Before printing, set the real domain (see `.env.example`): `NEXT_PUBLIC_SITE_URL=https://your-domain`.
 Until then every sheet is stamped "placeholder domain — do not print".
