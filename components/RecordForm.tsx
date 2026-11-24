@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import Link from "next/link";
 import { recordMoment, type RecordState } from "@/app/r/[code]/actions";
+import { rememberStory } from "@/lib/device";
 
 const INITIAL: RecordState = { status: "idle" };
 
@@ -14,18 +16,14 @@ export default function RecordForm({
 }) {
   const [state, action, pending] = useActionState(recordMoment, INITIAL);
 
-  // Remember, on this device only, which story was written here. "Pass it
-  // on" uses it so the link it makes continues from this story.
-  const savedId = state.status === "saved" ? state.momentId : null;
+  // Keep a copy of what was written on this device only. "Pass it on" uses
+  // the story's id so the link continues from it, and "Things that reached
+  // me" shows it back to the person who wrote it.
+  const saved = state.status === "saved" ? state : null;
   useEffect(() => {
-    if (!savedId) return;
-    try {
-      window.localStorage.setItem(`ripple:moment:${code}`, savedId);
-    } catch {
-      // Private browsing or storage disabled: the link still works, it just
-      // continues from the ripple rather than from this exact story.
-    }
-  }, [savedId, code]);
+    if (!saved || !saved.text) return;
+    rememberStory(code, { id: saved.momentId, text: saved.text, place: saved.place });
+  }, [saved, code]);
 
   // Shown up front when storage isn't connected, so nobody writes a story
   // that has nowhere to go.
@@ -48,7 +46,11 @@ export default function RecordForm({
         <p className="rp-note-title">Thank you. It’s part of the story now.</p>
         <p>
           A person reads every moment before it appears here, so yours will
-          show up on this card’s journey a little later.
+          show up on this journey a little later.
+        </p>
+        <p>
+          It’s kept in <Link href="/reached">Things that reached me</Link>, on
+          this device only.
         </p>
       </div>
     );

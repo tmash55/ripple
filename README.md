@@ -41,6 +41,7 @@ Originally built as a single static `index.html` (see git history) on a design l
 - `/r/{code}` — the page a QR code opens.
 - `supabase/migrations/` — the data model and the 50-card seed, as applied to the Ripple Supabase project on 2026-11-24.
 - **Lineage:** a printed card is a `card` ripple whose stories form a chain as it changes hands. "Pass it on" makes a `link` ripple of the person's own; stories recorded on a link are the next generation after the story it branched from. See `supabase/migrations/20261124210000_pass_it_on_branching.sql`.
+- `app/reached/` — "Things that reached me": a private list kept in the visitor's own browser (`lib/device.ts`, localStorage). The only thing asked of the server is counts of what came after their story or link (`reach()` in `supabase/migrations/20261124220000_reach.sql`).
 - `app/review/` — the story review queue (password-protected, not indexed). Stories stay hidden from the public until someone approves them here. Also shows scans, stories, shares, longest chain and places reached.
 
 Before printing, set the real domain (see `.env.example`): `NEXT_PUBLIC_SITE_URL=https://your-domain`.

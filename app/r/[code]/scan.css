@@ -94,3 +94,7 @@
 }
 .rp-pass-row{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
 .rp-pass-row .rp-pass-btn{margin-top:0;width:auto;flex:1 1 140px}
+
+/* the quiet link to "Things that reached me" */
+.rp-mine{margin-top:36px;text-align:center;font-size:var(--fs-small);line-height:20px}
+.rp-mine a,.rp-note a{color:var(--ink);font-weight:var(--w-ui);text-underline-offset:3px}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PassItOn from "@/components/PassItOn";
 import RecordForm from "@/components/RecordForm";
+import RememberVisit from "@/components/RememberVisit";
 import RippleMark from "@/components/RippleMark";
 import { GENESIS_BATCH, findCard, isCodeShaped, normalizeCode } from "@/lib/genesis";
 import { SITE_URL } from "@/lib/site";
@@ -145,6 +146,17 @@ export default async function RipplePage({ params }: Props) {
             fallbackHint={isLink ? "It makes a link that is yours to give." : "Or simply hand this card to someone else."}
           />
         </div>
+
+        <p className="rp-mine">
+          <Link href="/reached">Things that reached me</Link>
+        </p>
+        <RememberVisit
+          code={code}
+          kind={isLink ? "link" : "card"}
+          message={message}
+          rootNumber={rootNumber}
+          place={place}
+        />
 
         <p className="rp-foot">
           No account. No name. No location unless you type one.

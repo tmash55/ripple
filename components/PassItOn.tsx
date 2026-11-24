@@ -2,24 +2,7 @@
 
 import { useState } from "react";
 import { createLink, logShare } from "@/app/r/[code]/actions";
-
-type Cached = { code: string; momentId: string | null };
-
-function readStorage(key: string): string | null {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function writeStorage(key: string, value: string) {
-  try {
-    window.localStorage.setItem(key, value);
-  } catch {
-    // Storage unavailable: a new link is made next time instead.
-  }
-}
+import { linkFor, rememberLink, storyIdFor } from "@/lib/device";
 
 const SHARE_TEXT =
   "Someone passed a little kindness forward, and it found me. Now it’s yours.";
@@ -69,23 +52,11 @@ export default function PassItOn({
 
   async function prepare() {
     setBusy(true);
-    const momentId = readStorage(`ripple:moment:${code}`);
-    const cacheKey = `ripple:link:${code}`;
-
-    let linkCode: string | null = null;
-    try {
-      const cached = JSON.parse(readStorage(cacheKey) ?? "null") as Cached | null;
-      // Reuse the link unless a story has been written here since it was made.
-      if (cached && cached.momentId === momentId) linkCode = cached.code;
-    } catch {
-      linkCode = null;
-    }
-
+    // Reuse this device's link unless a story has been written here since it was made.
+    let linkCode = linkFor(code);
     if (!linkCode) {
-      linkCode = await createLink(code, momentId);
-      if (linkCode) {
-        writeStorage(cacheKey, JSON.stringify({ code: linkCode, momentId } satisfies Cached));
-      }
+      linkCode = await createLink(code, storyIdFor(code));
+      if (linkCode) rememberLink(code, linkCode);
     }
 
     // If a link couldn't be made, passing on this page still works.

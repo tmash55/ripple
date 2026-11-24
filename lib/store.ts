@@ -37,6 +37,14 @@ export type Journey = {
   moments: Moment[];
 };
 
+export type ReachCounts = {
+  storyStatus: "pending" | "approved" | "hidden" | null;
+  storiesAfter: number;
+  generationsAfter: number;
+  placesAfter: number;
+  linkOpens: number | null;
+};
+
 export type NewMoment = {
   code: string;
   text: string;
@@ -60,6 +68,8 @@ export interface RippleStore {
    * this device recorded there, if any. Returns the new link's code.
    */
   passItOn(code: string, momentId: string | null): Promise<string>;
+  /** Counts of what came after a story and/or a passed-on link. Null if neither is known. */
+  reach(momentId: string | null, linkCode: string | null): Promise<ReachCounts | null>;
   /** Best-effort; must never throw into the page. */
   logEvent(event: FunnelEvent): Promise<void>;
 }
@@ -167,6 +177,24 @@ class SupabaseStore implements RippleStore {
     });
     if (typeof linkCode !== "string") throw new Error("pass_it_on returned no code");
     return linkCode;
+  }
+
+  async reach(momentId: string | null, linkCode: string | null): Promise<ReachCounts | null> {
+    const r = await this.rpc<{
+      story_status: "pending" | "approved" | "hidden" | null;
+      stories_after: number;
+      generations_after: number;
+      places_after: number;
+      link_opens: number | null;
+    } | null>("reach", { p_moment_id: momentId, p_link_code: linkCode });
+    if (!r) return null;
+    return {
+      storyStatus: r.story_status,
+      storiesAfter: r.stories_after,
+      generationsAfter: r.generations_after,
+      placesAfter: r.places_after,
+      linkOpens: r.link_opens,
+    };
   }
 
   async logEvent(event: FunnelEvent): Promise<void> {

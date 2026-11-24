@@ -107,7 +107,10 @@ function Story({ moment }: { moment: ReviewMoment }) {
   return (
     <li className="rv-story">
       <p className="rv-meta">
-        <Link href={`/r/${moment.ripple_code}`}>{cardLabel(moment)}</Link>
+        {/* No prefetch: loading a ripple page counts as a scan. */}
+        <Link href={`/r/${moment.ripple_code}`} prefetch={false}>
+          {cardLabel(moment)}
+        </Link>
         <span>Generation {moment.generation}</span>
         <span>{when(moment.created_at)}</span>
       </p>

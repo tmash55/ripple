@@ -6,7 +6,7 @@ import { getStore, hashSession } from "@/lib/store";
 
 export type RecordState =
   | { status: "idle" }
-  | { status: "saved"; momentId: string | null }
+  | { status: "saved"; momentId: string | null; text: string; place: string | null }
   | { status: "setting_up" }
   | { status: "invalid"; message: string }
   | { status: "error" };
@@ -20,7 +20,7 @@ export async function recordMoment(
 ): Promise<RecordState> {
   // Honeypot: real people never see or fill this field.
   if (String(formData.get("website") ?? "").trim() !== "") {
-    return { status: "saved", momentId: null };
+    return { status: "saved", momentId: null, text: "", place: null };
   }
 
   // Printed cards and passed-on links share one code shape; the database
@@ -56,7 +56,7 @@ export async function recordMoment(
       type: "record",
       sessionHash: hashSession(ip, h.get("user-agent")),
     });
-    return { status: "saved", momentId };
+    return { status: "saved", momentId, text, place: place || null };
   } catch {
     return { status: "error" };
   }
@@ -91,4 +91,44 @@ export async function logShare(code: string): Promise<void> {
     type: "share",
     sessionHash: hashSession(ip, h.get("user-agent")),
   });
+}
+
+export type Reach = {
+  storyStatus: "pending" | "approved" | "hidden" | null;
+  storiesAfter: number;
+  generationsAfter: number;
+  placesAfter: number;
+  linkOpens: number | null;
+};
+
+/**
+ * "What happened after you" for the things this device remembers. Only
+ * counts come back. Keyed by ripple code; missing keys mean nothing is known.
+ */
+export async function getReach(
+  items: Array<{ code: string; momentId: string | null; linkCode: string | null }>,
+): Promise<Record<string, Reach>> {
+  const store = getStore();
+  if (!store || !Array.isArray(items)) return {};
+  const wanted = items
+    .slice(0, 40)
+    .map((i) => ({
+      code: String(i?.code ?? ""),
+      momentId: typeof i?.momentId === "string" && UUID.test(i.momentId) ? i.momentId : null,
+      linkCode: typeof i?.linkCode === "string" && isCodeShaped(i.linkCode) ? normalizeCode(i.linkCode) : null,
+    }))
+    .filter((i) => isCodeShaped(i.code) && (i.momentId || i.linkCode));
+
+  const results = await Promise.all(
+    wanted.map(async (i) => {
+      try {
+        return [normalizeCode(i.code), await store.reach(i.momentId, i.linkCode)] as const;
+      } catch {
+        return [normalizeCode(i.code), null] as const;
+      }
+    }),
+  );
+  const out: Record<string, Reach> = {};
+  for (const [code, reach] of results) if (reach) out[code] = reach;
+  return out;
 }
